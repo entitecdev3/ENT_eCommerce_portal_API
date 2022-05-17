@@ -9801,5 +9801,182 @@
                 "6806aa295ae841d2"
             ]
         ]
+    },
+    {
+        "id": "68a39ac5ac4c93fb",
+        "type": "http response",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "2ea3cf63457a69f1",
+        "type": "HanaClient-request",
+        "z": "e4fe51cffe55d142",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 587,
+        "y": 1269,
+        "wires": [
+            [
+                "61d691005061aaea",
+                "69d5010eb1ac75c4"
+            ],
+            [
+                "9502c947fb0daec5",
+                "430f5f42d529d935",
+                "68a39ac5ac4c93fb"
+            ]
+        ]
+    },
+    {
+        "id": "34ea6b9aa5599726",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 1240,
+        "wires": [
+            [
+                "e4749e409fe5cedb"
+            ],
+            [
+                "68a39ac5ac4c93fb"
+            ]
+        ]
+    },
+    {
+        "id": "e4749e409fe5cedb",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `select \"GroupNum\",\"PymntGroup\" from OCTG order by \"GroupNum\"`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 1240,
+        "wires": [
+            [
+                "82d6053dba227fa6",
+                "ad336e6a23388987"
+            ]
+        ]
+    },
+    {
+        "id": "61d691005061aaea",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "9502c947fb0daec5",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "430f5f42d529d935",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "866f895552c0871e",
+        "type": "http in",
+        "z": "e4fe51cffe55d142",
+        "name": "VH_PayTermsGrpCode",
+        "url": "/api/VH_PayTermsGrpCode",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 1180,
+        "wires": [
+            [
+                "34ea6b9aa5599726"
+            ]
+        ]
+    },
+    {
+        "id": "82d6053dba227fa6",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "69d5010eb1ac75c4",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 1220,
+        "wires": [
+            [
+                "68a39ac5ac4c93fb"
+            ]
+        ]
+    },
+    {
+        "id": "ad336e6a23388987",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "x": 490,
+        "y": 1160,
+        "wires": [
+            [
+                "2ea3cf63457a69f1"
+            ]
+        ]
     }
 ]

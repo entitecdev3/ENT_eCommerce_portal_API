@@ -9678,7 +9678,7 @@
         "type": "function",
         "z": "e4fe51cffe55d142",
         "name": "sql",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `select \"GroupCode\",\"GroupName\" from OCRG`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\n// var sql = `select \"GroupCode\",\"GroupName\" from OCRG`;\nvar sql = `select \"PayMethCod\",\"Descript\" from OPYM`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
