@@ -1,0 +1,22 @@
+{
+    "name": "ENT_Neo_TimeSheet_API",
+    "description": "A Node-RED Project",
+    "version": "0.0.1",
+    "dependencies": {
+        "node-red-contrib-ldap-login": "0.0.15",
+        "red-contrib-b1-service-layer-config": "1.0.0",
+        "red-contrib-b1-service-layer-request": "1.0.0",
+        "red-contrib-Batch-Convertor": "1.0.0",
+        "red-contrib-HanaClient-config": "1.0.0",
+        "red-contrib-HanaClient-request": "1.0.0",
+        "red-contrib-settings-config": "1.0.0",
+        "node-red-contrib-flogger": "1.2.2",
+        "node-red-contrib-pdfjs": "0.0.2"
+    },
+    "node-red": {
+        "settings": {
+            "flowFile": "flow.json",
+            "credentialsFile": "flow_cred.json"
+        }
+    }
+}
