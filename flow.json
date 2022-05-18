@@ -166,6 +166,14 @@
         "env": []
     },
     {
+        "id": "b4c909891809f71f",
+        "type": "tab",
+        "label": "Client Data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -9976,6 +9984,183 @@
         "wires": [
             [
                 "2ea3cf63457a69f1"
+            ]
+        ]
+    },
+    {
+        "id": "3f7077ec29a1f614",
+        "type": "http response",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "384b28445587e924",
+        "type": "HanaClient-request",
+        "z": "b4c909891809f71f",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 587,
+        "y": 229,
+        "wires": [
+            [
+                "ca7e66deafd61cbf",
+                "2cc6f68325b188e1"
+            ],
+            [
+                "d693a4d3fac5d175",
+                "6e509ddc0449eb2b",
+                "3f7077ec29a1f614"
+            ]
+        ]
+    },
+    {
+        "id": "4bef4cf626559e79",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 200,
+        "wires": [
+            [
+                "019dcf8de410d3e7"
+            ],
+            [
+                "3f7077ec29a1f614"
+            ]
+        ]
+    },
+    {
+        "id": "019dcf8de410d3e7",
+        "type": "function",
+        "z": "b4c909891809f71f",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `\nSELECT \"U_nomegrart\", \"U_sc1\", \"U_sc2\", \"U_sc3\", \"U_sc4\"\nFROM \"@SCONTI_BP_GR_ART\"\nWHERE \"U_codicebp\" = '${msg.req.query[\"ClientId\"]}'\n`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 200,
+        "wires": [
+            [
+                "0a5e0d5fb9ff67a9",
+                "c54786827398d1c5"
+            ]
+        ]
+    },
+    {
+        "id": "ca7e66deafd61cbf",
+        "type": "debug",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "d693a4d3fac5d175",
+        "type": "debug",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "6e509ddc0449eb2b",
+        "type": "function",
+        "z": "b4c909891809f71f",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "0bf9d9c11726edea",
+        "type": "http in",
+        "z": "b4c909891809f71f",
+        "name": "Client Data",
+        "url": "/api/ClientData",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 140,
+        "wires": [
+            [
+                "4bef4cf626559e79"
+            ]
+        ]
+    },
+    {
+        "id": "0a5e0d5fb9ff67a9",
+        "type": "debug",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "2cc6f68325b188e1",
+        "type": "function",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 180,
+        "wires": [
+            [
+                "3f7077ec29a1f614"
+            ]
+        ]
+    },
+    {
+        "id": "c54786827398d1c5",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "b4c909891809f71f",
+        "name": "",
+        "x": 490,
+        "y": 120,
+        "wires": [
+            [
+                "384b28445587e924"
             ]
         ]
     }
