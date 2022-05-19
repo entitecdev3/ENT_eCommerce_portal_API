@@ -8517,7 +8517,7 @@
         "type": "function",
         "z": "4fec2bca85620dbf",
         "name": "",
-        "func": "if (msg.req.query[\"ItemCode\"] === undefined) {\n    return [\"KeyWords Parameter is missing\", msg]\n} else {\n    if (msg.flowInfo === undefined) msg.flowInfo = {}\n    msg.flowInfo.request = {}\n    msg.flowInfo.request.query = msg.req.query\n    return [msg, null]\n}\n",
+        "func": "// if (msg.req.query[\"ItemCode\"] === undefined) {\n//     return [\"KeyWords Parameter is missing\", msg]\n// } else {\n    if (msg.flowInfo === undefined) msg.flowInfo = {}\n    msg.flowInfo.request = {}\n    msg.flowInfo.request.query = msg.req.query\n    return [msg, null]\n// }\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
