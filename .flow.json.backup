@@ -174,6 +174,14 @@
         "env": []
     },
     {
+        "id": "5a9685c3252b1c35",
+        "type": "tab",
+        "label": "batchCall",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -2849,7 +2857,7 @@
         "type": "HanaClient-request",
         "z": "5d59b9ac.ec0a48",
         "server": "b298e45c.688258",
-        "sql": "select * from OHEM where \"email\" =   'giuseppe.delaurentiis@neosperience.com'",
+        "sql": "",
         "x": 390,
         "y": 960,
         "wires": [
@@ -8517,7 +8525,7 @@
         "type": "function",
         "z": "4fec2bca85620dbf",
         "name": "",
-        "func": "if (msg.req.query[\"ItemCode\"] === undefined) {\n    return [\"KeyWords Parameter is missing\", msg]\n} else {\n    if (msg.flowInfo === undefined) msg.flowInfo = {}\n    msg.flowInfo.request = {}\n    msg.flowInfo.request.query = msg.req.query\n    return [msg, null]\n}\n",
+        "func": "// if (msg.req.query[\"ItemCode\"] === undefined) {\n//     return [\"KeyWords Parameter is missing\", msg]\n// } else {\n    if (msg.flowInfo === undefined) msg.flowInfo = {}\n    msg.flowInfo.request = {}\n    msg.flowInfo.request.query = msg.req.query\n    return [msg, null]\n// }\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -9835,9 +9843,9 @@
                 "69d5010eb1ac75c4"
             ],
             [
+                "68a39ac5ac4c93fb",
                 "9502c947fb0daec5",
-                "430f5f42d529d935",
-                "68a39ac5ac4c93fb"
+                "430f5f42d529d935"
             ]
         ]
     },
@@ -9984,6 +9992,360 @@
         "wires": [
             [
                 "2ea3cf63457a69f1"
+            ]
+        ]
+    },
+    {
+        "id": "3159825e73d802d3",
+        "type": "http response",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 1680,
+        "wires": []
+    },
+    {
+        "id": "1656790c22edfc36",
+        "type": "HanaClient-request",
+        "z": "e4fe51cffe55d142",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 587,
+        "y": 1589,
+        "wires": [
+            [
+                "c89798c546818fca",
+                "749b1b457c66ac1d"
+            ],
+            [
+                "682c3fbd167afa75",
+                "55581088abf967a8",
+                "3159825e73d802d3"
+            ]
+        ]
+    },
+    {
+        "id": "63c4fbf0c4178eae",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 1560,
+        "wires": [
+            [
+                "f24338951056c42d"
+            ],
+            [
+                "3159825e73d802d3"
+            ]
+        ]
+    },
+    {
+        "id": "f24338951056c42d",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `select \"Code\",\"Name\" from OCRY`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 1560,
+        "wires": [
+            [
+                "02648d70b453bd3f",
+                "1dd74fa49cb909d6"
+            ]
+        ]
+    },
+    {
+        "id": "c89798c546818fca",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "682c3fbd167afa75",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "55581088abf967a8",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1680,
+        "wires": []
+    },
+    {
+        "id": "55400b0c2c4240da",
+        "type": "http in",
+        "z": "e4fe51cffe55d142",
+        "name": "VH_Country",
+        "url": "/api/VH_Country",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 1500,
+        "wires": [
+            [
+                "63c4fbf0c4178eae"
+            ]
+        ]
+    },
+    {
+        "id": "02648d70b453bd3f",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "749b1b457c66ac1d",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 1540,
+        "wires": [
+            [
+                "3159825e73d802d3"
+            ]
+        ]
+    },
+    {
+        "id": "1dd74fa49cb909d6",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "x": 490,
+        "y": 1480,
+        "wires": [
+            [
+                "1656790c22edfc36"
+            ]
+        ]
+    },
+    {
+        "id": "33f24a8e8a8d0b04",
+        "type": "http response",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 1980,
+        "wires": []
+    },
+    {
+        "id": "2ef7841c4b33650a",
+        "type": "HanaClient-request",
+        "z": "e4fe51cffe55d142",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 587,
+        "y": 1889,
+        "wires": [
+            [
+                "5cb09a551da60821",
+                "9419e48487fcdc84"
+            ],
+            [
+                "e52929db3966b69d",
+                "b903a2d3facd1be4",
+                "33f24a8e8a8d0b04"
+            ]
+        ]
+    },
+    {
+        "id": "cd9c4fb253410eca",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 1860,
+        "wires": [
+            [
+                "f1687a09cdf39d02"
+            ],
+            [
+                "33f24a8e8a8d0b04"
+            ]
+        ]
+    },
+    {
+        "id": "f1687a09cdf39d02",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\n// node.warn(reqSession[0]);\nif (msg.req.query && msg.req.query.Country && msg.req.query.Country !==\"undefined\"){\n    var sql = `select \"Code\",\"Name\",\"Country\" from OCST where \"Country\"='${msg.req.query.Country}'`;\n}\nelse{\n    var sql = `select \"Code\",\"Name\",\"Country\" from OCST`;\n}\n\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 1860,
+        "wires": [
+            [
+                "eab4fe09774c7501",
+                "72571b92d668539c"
+            ]
+        ]
+    },
+    {
+        "id": "5cb09a551da60821",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 1940,
+        "wires": []
+    },
+    {
+        "id": "e52929db3966b69d",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 1900,
+        "wires": []
+    },
+    {
+        "id": "b903a2d3facd1be4",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1980,
+        "wires": []
+    },
+    {
+        "id": "b34d1d89be4599bf",
+        "type": "http in",
+        "z": "e4fe51cffe55d142",
+        "name": "VH_State",
+        "url": "/api/VH_State",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 1800,
+        "wires": [
+            [
+                "cd9c4fb253410eca"
+            ]
+        ]
+    },
+    {
+        "id": "eab4fe09774c7501",
+        "type": "debug",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "9419e48487fcdc84",
+        "type": "function",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 1840,
+        "wires": [
+            [
+                "33f24a8e8a8d0b04"
+            ]
+        ]
+    },
+    {
+        "id": "72571b92d668539c",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "e4fe51cffe55d142",
+        "name": "",
+        "x": 490,
+        "y": 1780,
+        "wires": [
+            [
+                "2ef7841c4b33650a"
             ]
         ]
     },
@@ -10162,6 +10524,216 @@
             [
                 "384b28445587e924"
             ]
+        ]
+    },
+    {
+        "id": "51c525aa5bb66d97",
+        "type": "http response",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1030,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "9bc1f7a60d914381",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "env": [],
+        "x": 180,
+        "y": 180,
+        "wires": [
+            [
+                "45bfa688b3911c2f"
+            ],
+            [
+                "51c525aa5bb66d97"
+            ]
+        ]
+    },
+    {
+        "id": "45bfa688b3911c2f",
+        "type": "function",
+        "z": "5a9685c3252b1c35",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\n\nmsg.payload=msg.req.body;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 100,
+        "wires": [
+            [
+                "6f6dbdd58e300447",
+                "eec865cab2cf0a10"
+            ]
+        ]
+    },
+    {
+        "id": "15d64d3107dcc8ea",
+        "type": "debug",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 870,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "2c8e3a6f749779e9",
+        "type": "debug",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 810,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ea47e9d73c712c87",
+        "type": "function",
+        "z": "5a9685c3252b1c35",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "31a17c7e7e0c7587",
+        "type": "http in",
+        "z": "5a9685c3252b1c35",
+        "name": "Batch call",
+        "url": "/api/batchCall",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 120,
+        "wires": [
+            [
+                "9bc1f7a60d914381"
+            ]
+        ]
+    },
+    {
+        "id": "6f6dbdd58e300447",
+        "type": "debug",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 430,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "5e9644d28613d50b",
+        "type": "function",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 120,
+        "wires": [
+            [
+                "51c525aa5bb66d97"
+            ]
+        ]
+    },
+    {
+        "id": "eec865cab2cf0a10",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "x": 510,
+        "y": 100,
+        "wires": [
+            [
+                "40e1dc497356d824"
+            ]
+        ]
+    },
+    {
+        "id": "2fa427cc58631820",
+        "type": "b1-service-layer-request",
+        "z": "5a9685c3252b1c35",
+        "server": "596459b.d78c4a8",
+        "name": "Batch Call",
+        "serviceLayerMethod": "",
+        "httpMethod": "POST",
+        "slResponseObject": "batchResource",
+        "x": 570,
+        "y": 180,
+        "wires": [
+            [
+                "15e9f98c06c37b88",
+                "2c8e3a6f749779e9"
+            ],
+            [
+                "ea47e9d73c712c87",
+                "51c525aa5bb66d97"
+            ]
+        ]
+    },
+    {
+        "id": "40e1dc497356d824",
+        "type": "Odata-Converter",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "httpMethod": "v4.1tov4.0",
+        "x": 710,
+        "y": 80,
+        "wires": [
+            [
+                "2fa427cc58631820",
+                "15d64d3107dcc8ea"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "15e9f98c06c37b88",
+        "type": "Odata-Converter",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "httpMethod": "v4.0tov4.1",
+        "x": 770,
+        "y": 160,
+        "wires": [
+            [
+                "5e9644d28613d50b"
+            ],
+            []
         ]
     }
 ]
