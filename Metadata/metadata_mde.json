@@ -1,0 +1,79 @@
+{
+    "metadataUDTs": [
+        {
+            "TableName": "ENT_PORTAL_PARAMS",
+            "TableDescription": "ENT - Parameter Table",
+            "TableType": "bott_NoObject",
+            "Archivable": "tNO",
+            "ArchiveDateField": null
+        }
+    ],
+    "metadataUDOs": [],
+    "metadataUDF_on_SAPTables": [
+        {
+            "Name": "ENT_PWD",
+            "Type": "db_Alpha",
+            "Size": 50,
+            "Description": "ENT - Password",
+            "SubType": "st_None",
+            "LinkedTable": null,
+            "DefaultValue": null,
+            "TableName": "AHEM",
+            "FieldID": 4,
+            "EditSize": 50,
+            "Mandatory": "tNO",
+            "LinkedUDO": null,
+            "LinkedSystemObject": null,
+            "ValidValuesMD": []
+        }
+    ],
+    "metadataUDF_on_CustomUDTs": [
+        {
+            "Name": "Valore",
+            "Type": "db_Memo",
+            "Size": 8,
+            "Description": "value field",
+            "SubType": "st_None",
+            "LinkedTable": null,
+            "DefaultValue": null,
+            "TableName": "@ENT_PORTAL_PARAMS",
+            "FieldID": 0,
+            "EditSize": null,
+            "Mandatory": "tNO",
+            "LinkedUDO": null,
+            "LinkedSystemObject": null,
+            "ValidValuesMD": []
+        }
+    ],
+    "UDTValuesMetadata": {
+        "U_ENT_PORTAL_PARAMS": [
+            {
+                "Code": "ENT_PWD_EXP_INTERVAL_DAYS",
+                "Name": "Intervallo Scadenza Pwd (in giorni)",
+                "U_Valore": "60"
+            },
+            {
+                "Code": "ENT_SESSION_TIMEOUT",
+                "Name": "ENT - Session Timeout (minuti)",
+                "U_Valore": "480"
+            },
+            {
+                "Code": "ENT_FileSize_Limit",
+                "Name": "ENT_FileSize_Limit (mb)",
+                "U_Valore": "11"
+            },
+            {
+                "Code": "ENT_SHOPCART_LOCAL_QTY_OVERFLOW_YN",
+                "Name": "ENT - Alow Oveflow of Available Qty in Local Company",
+                "U_Valore": "Y"
+            },
+            {
+                "Code": "ENT_SHOPCART_GROUP_QTY_OVERFLOW_YN",
+                "Name": "ENT - Alow Oveflow of Available Qty in Group (ALL Companies)",
+                "U_Valore": "N"
+            }
+        ]
+    },
+    "UDProceduresMetadata": [],
+    "UDViewsMetadata": []
+}

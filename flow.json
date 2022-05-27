@@ -182,6 +182,13 @@
         "env": []
     },
     {
+        "id": "f2739e90.9459f",
+        "type": "tab",
+        "label": "Metadata Import/Export",
+        "disabled": false,
+        "info": ""
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -10734,6 +10741,584 @@
                 "5e9644d28613d50b"
             ],
             []
+        ]
+    },
+    {
+        "id": "513a81b0.7ddec",
+        "type": "metadata-engine",
+        "z": "f2739e90.9459f",
+        "configFileName": "config_flow.json",
+        "configType": "export-metadata",
+        "x": 350,
+        "y": 120,
+        "wires": [
+            [
+                "aa8f45bf77521b05"
+            ],
+            [
+                "46437a75.8aecd4"
+            ]
+        ]
+    },
+    {
+        "id": "46437a75.8aecd4",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 530,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "63a35213.71622c",
+        "type": "json",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 730,
+        "y": 100,
+        "wires": [
+            [
+                "7d232985.f89a68"
+            ]
+        ]
+    },
+    {
+        "id": "7d232985.f89a68",
+        "type": "file",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 740,
+        "y": 140,
+        "wires": [
+            [
+                "fe9bbfc0.38fa5"
+            ]
+        ]
+    },
+    {
+        "id": "fe9bbfc0.38fa5",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 890,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "84109b34.aad5a8",
+        "type": "metadata-engine",
+        "z": "f2739e90.9459f",
+        "configFileName": "config_flow.json",
+        "configType": "import-metadata",
+        "x": 530,
+        "y": 300,
+        "wires": [
+            [
+                "9d965379.61883"
+            ],
+            [
+                "daf8df52.3fcea"
+            ]
+        ]
+    },
+    {
+        "id": "9d965379.61883",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 730,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "daf8df52.3fcea",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 730,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "f8c2797c.2b44e8",
+        "type": "inject",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 620,
+        "wires": [
+            [
+                "3a4b0f8b.e7cd6"
+            ]
+        ]
+    },
+    {
+        "id": "3a4b0f8b.e7cd6",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 620,
+        "wires": [
+            [
+                "b0bc12d1.f7489"
+            ]
+        ]
+    },
+    {
+        "id": "b0bc12d1.f7489",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 530,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "3f9e290.149bbd8",
+        "type": "comment",
+        "z": "f2739e90.9459f",
+        "name": "Import",
+        "info": "",
+        "x": 110,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "523b53c0.20fd3c",
+        "type": "comment",
+        "z": "f2739e90.9459f",
+        "name": "Export",
+        "info": "",
+        "x": 110,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "aa8f45bf77521b05",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "file path&name",
+        "func": "\nmsg.filename = `./projects/${global.get('redSettings').get('projects').activeProject}/Metadata/metadata_mde.json`\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 100,
+        "wires": [
+            [
+                "63a35213.71622c"
+            ]
+        ]
+    },
+    {
+        "id": "b0128a0d8cb5d0aa",
+        "type": "inject",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "513a81b0.7ddec"
+            ]
+        ]
+    },
+    {
+        "id": "0bc52eaaa4db6127",
+        "type": "inject",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 300,
+        "wires": [
+            [
+                "2417219d3c903f83"
+            ]
+        ]
+    },
+    {
+        "id": "2417219d3c903f83",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "func": "msg.fileToImport = `${global.get('redSettings').userDir}projects\\\\${global.get('redSettings').get('projects').activeProject}\\\\Metadata\\\\metadata_mde.json`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 300,
+        "wires": [
+            [
+                "84109b34.aad5a8"
+            ]
+        ]
+    },
+    {
+        "id": "bb2244e9fd354052",
+        "type": "inject",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 820,
+        "wires": [
+            [
+                "815587a918b82b7b"
+            ]
+        ]
+    },
+    {
+        "id": "e522d687a64f6a76",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 630,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "815587a918b82b7b",
+        "type": "file in",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "filename": "config_flow.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 340,
+        "y": 820,
+        "wires": [
+            [
+                "641917ba806ecb08"
+            ]
+        ]
+    },
+    {
+        "id": "641917ba806ecb08",
+        "type": "json",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 490,
+        "y": 820,
+        "wires": [
+            [
+                "e522d687a64f6a76",
+                "63ee9777816b1f6d"
+            ]
+        ]
+    },
+    {
+        "id": "63ee9777816b1f6d",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "B1 Config",
+        "func": "const { exportFrom } = msg.payload;\nmsg.configOverride = {\n    database: exportFrom.companyName,\n    userName: exportFrom.userName,\n    password: exportFrom.password,\n    serviceLayerUrl: exportFrom.serviceLayerUrl\n};\n\nmsg.configOverrideHana = {\n    \"server\": \"hanab1hdev20\",\n    \"port\": \"30015\",\n    \"database\": \"DEV_COMESTERO\",\n    \"userName\": \"SYSTEM\",\n    \"password\": \"HanaSysAdm1n\",\n    \"maxRecordSet\": 10000\n}\n// msg.serviceLayer = {\n\n// };\n// msg.serviceLayer = {\n//     method: `UserTablesMD?$filter=startswith(TableName, 'ENT_')`,\n//     headers: {\n//         'Prefer': 'odata.maxpagesize=0'\n//     }\n// };\n// msg.serviceLayer.method2 = `UserFieldsMD?$filter=startswith(Name, 'ENT_')`;\n// msg.serviceLayer.method3 = `UserFieldsMD?$filter=startswith(TableName, '@ENT_')`;\n\nmsg.exportFrom = exportFrom;\n// ${global.get('redSettings').get('projects').activeProject}\nmsg.filename = `./projects/${global.get('redSettings').get('projects').activeProject}/Metadata/metadata_mde.json`\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8515e0f692da2f2c",
+        "type": "inject",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 900,
+        "wires": [
+            [
+                "ada74f58f8be4701"
+            ]
+        ]
+    },
+    {
+        "id": "9563b82ab4a0e1af",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 470,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "df619ac27a584b8a",
+        "type": "file in",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "filename": "config_flow.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 360,
+        "y": 940,
+        "wires": [
+            [
+                "bc9382b1fdfca2d5"
+            ]
+        ]
+    },
+    {
+        "id": "bc9382b1fdfca2d5",
+        "type": "json",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 530,
+        "y": 940,
+        "wires": [
+            [
+                "cea83c7f5826c1d3"
+            ]
+        ]
+    },
+    {
+        "id": "cea83c7f5826c1d3",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "B1 Config",
+        "func": "const { importTo } = msg.payload;\nmsg.importTo  = importTo;\n\nmsg.configOverrideHana = {\n    \"server\": \"hanab1hdev20\",\n    \"port\": \"30015\",\n    \"database\": \"DEV_COMESTERO\",\n    \"userName\": \"SYSTEM\",\n    \"password\": \"HanaSysAdm1n\",\n    \"maxRecordSet\": 10000\n}\n\nmsg.filename = `./projects/${global.get('redSettings').get('projects').activeProject}/Metadata/metadata_mde.json`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 940,
+        "wires": [
+            [
+                "cde29ab2337df4ab",
+                "197e939eefb5139e"
+            ]
+        ]
+    },
+    {
+        "id": "cde29ab2337df4ab",
+        "type": "link out",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "links": [
+            "4087f0aba350264c"
+        ],
+        "x": 855,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "4087f0aba350264c",
+        "type": "link in",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "links": [
+            "cde29ab2337df4ab"
+        ],
+        "x": 125,
+        "y": 1000,
+        "wires": [
+            [
+                "6c0247ab8563f6dc"
+            ]
+        ]
+    },
+    {
+        "id": "e97223431f89574e",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "set dataToImport",
+        "func": "msg.dataToImport = msg.payload;\n\n// msg.configOverride = {};\n\n// msg.configOverride = {\n//     database: msg.importTo[0].companyName,\n//     userName: msg.importTo[0].userName,\n//     password: msg.importTo[0].password,\n//     serviceLayerUrl : msg.importTo[0].serviceLayerUrl\n// }\n\n// msg.serviceLayer = {\n//     method: `UserTablesMD`,\n//     method2: `UserFieldsMD`,\n//     method3: `UserFieldsMD`\n// };\n// msg.serviceLayer={};\n msg.payload={};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5a85caaf26e64266",
+        "type": "json",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 430,
+        "y": 1000,
+        "wires": [
+            [
+                "e97223431f89574e"
+            ]
+        ]
+    },
+    {
+        "id": "6c0247ab8563f6dc",
+        "type": "file in",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 280,
+        "y": 1000,
+        "wires": [
+            [
+                "5a85caaf26e64266"
+            ]
+        ]
+    },
+    {
+        "id": "197e939eefb5139e",
+        "type": "debug",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 890,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "ada74f58f8be4701",
+        "type": "function",
+        "z": "f2739e90.9459f",
+        "name": "",
+        "func": "msg.fileToImport = `${global.get('redSettings').userDir}/projects/${global.get('redSettings').get('projects').activeProject}/Metadata/metadata_mde.json`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 900,
+        "wires": [
+            [
+                "9563b82ab4a0e1af"
+            ]
         ]
     }
 ]
