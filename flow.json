@@ -735,7 +735,7 @@
                 "y": 160,
                 "wires": [
                     {
-                        "id": "f28c19d5.75dbf8"
+                        "id": "fc7b380c439b835b"
                     }
                 ]
             }
@@ -1937,26 +1937,6 @@
         ]
     },
     {
-        "id": "f28c19d5.75dbf8",
-        "type": "subflow:9f6ec0ec.1500d",
-        "z": "cc9afb6d.1e98a8",
-        "name": "",
-        "env": [
-            {
-                "name": "settingFilePath",
-                "value": "C:\\ENTITEC\\Bonomi_Pattini_API\\",
-                "type": "str"
-            }
-        ],
-        "x": 190,
-        "y": 160,
-        "wires": [
-            [
-                "3972601.edeb4a"
-            ]
-        ]
-    },
-    {
         "id": "3972601.edeb4a",
         "type": "function",
         "z": "cc9afb6d.1e98a8",
@@ -2029,6 +2009,19 @@
                 "1bb3b9d1.921ea6"
             ],
             []
+        ]
+    },
+    {
+        "id": "fc7b380c439b835b",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "cc9afb6d.1e98a8",
+        "name": "",
+        "x": 200,
+        "y": 100,
+        "wires": [
+            [
+                "3972601.edeb4a"
+            ]
         ]
     },
     {
@@ -2457,7 +2450,7 @@
         "type": "function",
         "z": "5d59b9ac.ec0a48",
         "name": "SL Prep",
-        "func": "msg.serviceLayer.method = 'U_ENT_PORTAL_PARAMS';\nmsg.configOverride = msg.autologin || msg.req.body;\nif(msg.configOverride.language.includes(\"en\")){\n    msg.configOverride.language='3';\n}\nelse{\n    msg.configOverride.language = '13';\n}\nreturn msg;",
+        "func": "msg.serviceLayer.method = 'U_ENT_PORTAL_PARAMS';\nmsg.configOverride = msg.autologin || msg.req.body;\nif(msg.configOverride.language && msg.configOverride.language.includes(\"en\")){\n    msg.configOverride.language='3';\n}\nelse{\n    msg.configOverride.language = '13';\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2845,7 +2838,7 @@
         "type": "function",
         "z": "5d59b9ac.ec0a48",
         "name": "sql",
-        "func": "// msg.configOverride={};\nvar key= msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nconst authType = msg.config_flow_json['authentication'].authType;\nif (authType ===\"customSingleSignOn\"){\n    var header = msg.req.headers;\n    for (var k in header) {\n        if (k.toLowerCase() === \"login-email\") {\n            key = header[k];\n        }\n    }\n}\n\n// key = 'giuseppe.delaurentiis@neosperience.com';\n\nmsg.flowInfo.sql = `select * from OHEM where \"email\" = '${key}'`;\nif (authType ===\"b1slpassthrough\"){\n    msg.flowInfo.sql = `select * from OHEM T0 left join ousr T1\non T0.\"userId\"=T1.\"USERID\" where T1.\"USER_CODE\"= '${key}'`;\n}\n// msg.flowInfo.sql = `select * from OHEM where \"email\" = \n// 'giuseppe.delaurentiis@neosperience.com'`;\nreturn msg;",
+        "func": "// msg.configOverride={};\nvar key= msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nconst authType = msg.config_flow_json['authentication'].authType;\nif (authType ===\"customSingleSignOn\"){\n    var header = msg.req.headers;\n    for (var k in header) {\n        if (k.toLowerCase() === \"login-email\") {\n            key = header[k];\n        }\n    }\n}\n\n// key = 'giuseppe.delaurentiis@neosperience.com';\n\nmsg.flowInfo.sql = `select * from OHEM where \"email\" = '${key}'`;\nif (authType ===\"b1slpassthrough\"){\n    msg.flowInfo.sql = `select * from OHEM T0 left join ousr T1\non T0.\"userId\"=T1.\"USERID\" where T1.\"USER_CODE\"= '${key}'`;\n}\nmsg.configOverrideHana = {};\nmsg.configOverrideHana.database =msg.req.body.database;\nmsg.configOverride.database =msg.req.body.database;\n\n// msg.flowInfo.sql = `select * from OHEM where \"email\" = \n// 'giuseppe.delaurentiis@neosperience.com'`;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -10738,10 +10731,26 @@
         "y": 160,
         "wires": [
             [
-                "5e9644d28613d50b"
+                "5e9644d28613d50b",
+                "09b58657c5151c7c"
             ],
             []
         ]
+    },
+    {
+        "id": "09b58657c5151c7c",
+        "type": "debug",
+        "z": "5a9685c3252b1c35",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 990,
+        "y": 100,
+        "wires": []
     },
     {
         "id": "513a81b0.7ddec",
