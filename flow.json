@@ -2450,7 +2450,7 @@
         "type": "function",
         "z": "5d59b9ac.ec0a48",
         "name": "SL Prep",
-        "func": "msg.serviceLayer.method = 'U_ENT_PORTAL_PARAMS';\nmsg.configOverride = msg.autologin || msg.req.body;\nif(msg.configOverride.language && msg.configOverride.language.includes(\"en\")){\n    msg.configOverride.language='3';\n}\nelse{\n    msg.configOverride.language = '13';\n}\nreturn msg;",
+        "func": "msg.serviceLayer.method = 'U_ENT_PORTAL_PARAMS';\nmsg.configOverride = msg.autologin || msg.req.body;\n// msg.configOverride.userName=msg.configOverride.username;\nif(msg.configOverride.language && msg.configOverride.language.includes(\"en\")){\n    msg.configOverride.language='3';\n}\nelse{\n    msg.configOverride.language = '13';\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
