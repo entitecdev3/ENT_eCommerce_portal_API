@@ -189,6 +189,14 @@
         "info": ""
     },
     {
+        "id": "a48c03e025f12cb7",
+        "type": "tab",
+        "label": "ENT_PORTAL_PARAMS",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -3176,7 +3184,7 @@
         "wires": [
             [
                 "6e8f37ba.735f08",
-                "a696bd2a.7627a"
+                "1386abdef8c3a2cb"
             ],
             [
                 "6e8f37ba.735f08",
@@ -3900,6 +3908,25 @@
         "wires": [
             [
                 "47156a71.c27c34"
+            ]
+        ]
+    },
+    {
+        "id": "1386abdef8c3a2cb",
+        "type": "function",
+        "z": "10e8f1e2.a444de",
+        "name": "",
+        "func": "if (msg.serviceLayer.method.includes('BusinessPartners(')){\n    msg.serviceLayer.method +='?$select=CardName,CardCode,CurrentAccountBalance,FederalTaxID,AdditionalID,OpenDeliveryNotesBalance,OpenOrdersBalance,Industry,OwnerCode,U_front_office,SalesPersonCode,PayTermsGrpCode,U_Fido_Interno,U_AC_Fido_Assic,PeymentMethodCode,BPAddresses,ContactEmployees,Properties1,Properties2,Properties3,Properties4,Properties5,Properties6,Properties7,Properties8,Properties9,Properties10,Properties11,Properties12,Properties13,Properties14,Properties15,Properties16,Properties17,Properties18,Properties19,Properties20,Properties21,Properties22,Properties23,Properties24,Properties25,Properties26,Properties27,Properties28,Properties29,Properties30,Properties31,Properties32,Properties33,Properties34,Properties35,Properties36,Properties37,Properties38,Properties39,Properties40,Properties41,Properties42,Properties43,Properties44,Properties45,Properties46,Properties47,Properties48,Properties49,Properties50,Properties51,Properties52,Properties53,Properties54,Properties55,Properties56,Properties57,Properties58,Properties59,Properties60,Properties61,Properties62,Properties63,Properties64';\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 880,
+        "wires": [
+            [
+                "a696bd2a.7627a"
             ]
         ]
     },
@@ -11327,6 +11354,183 @@
         "wires": [
             [
                 "9563b82ab4a0e1af"
+            ]
+        ]
+    },
+    {
+        "id": "6a52ec6129207d1c",
+        "type": "http response",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 950,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "31dc959f2d73c37a",
+        "type": "HanaClient-request",
+        "z": "a48c03e025f12cb7",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 607,
+        "y": 269,
+        "wires": [
+            [
+                "5bb3d0f334564b9a",
+                "acf4d4451b942b3d"
+            ],
+            [
+                "ee01f9889cfb8306",
+                "10d8caaf0d7f2f11",
+                "6a52ec6129207d1c"
+            ]
+        ]
+    },
+    {
+        "id": "273e319d5cb9f365",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "env": [],
+        "x": 180,
+        "y": 240,
+        "wires": [
+            [
+                "b434e8dadb523f46"
+            ],
+            [
+                "6a52ec6129207d1c"
+            ]
+        ]
+    },
+    {
+        "id": "b434e8dadb523f46",
+        "type": "function",
+        "z": "a48c03e025f12cb7",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `\nSELECT*\nFROM \"@ENT_PORTAL_PARAMS\"\n`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 240,
+        "wires": [
+            [
+                "53b62eeb65474227",
+                "cea836e1acd3c1e9"
+            ]
+        ]
+    },
+    {
+        "id": "5bb3d0f334564b9a",
+        "type": "debug",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 590,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "ee01f9889cfb8306",
+        "type": "debug",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 810,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "10d8caaf0d7f2f11",
+        "type": "function",
+        "z": "a48c03e025f12cb7",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "2fe3b39aa77634ad",
+        "type": "http in",
+        "z": "a48c03e025f12cb7",
+        "name": "U_ENT_PORTAL_PARAMS",
+        "url": "/api/U_ENT_PORTAL_PARAMS",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 180,
+        "wires": [
+            [
+                "273e319d5cb9f365"
+            ]
+        ]
+    },
+    {
+        "id": "53b62eeb65474227",
+        "type": "debug",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 430,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "acf4d4451b942b3d",
+        "type": "function",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 220,
+        "wires": [
+            [
+                "6a52ec6129207d1c"
+            ]
+        ]
+    },
+    {
+        "id": "cea836e1acd3c1e9",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "a48c03e025f12cb7",
+        "name": "",
+        "x": 510,
+        "y": 160,
+        "wires": [
+            [
+                "31dc959f2d73c37a"
             ]
         ]
     }
