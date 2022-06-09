@@ -197,6 +197,22 @@
         "env": []
     },
     {
+        "id": "df177455398999d0",
+        "type": "tab",
+        "label": "Shopping cart",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "126e836d1563dc86",
+        "type": "tab",
+        "label": "Validation",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -3184,7 +3200,7 @@
         "wires": [
             [
                 "6e8f37ba.735f08",
-                "a696bd2a.7627a"
+                "1386abdef8c3a2cb"
             ],
             [
                 "6e8f37ba.735f08",
@@ -3884,7 +3900,7 @@
         "type": "function",
         "z": "10e8f1e2.a444de",
         "name": "before POST",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif (msg.serviceLayer.method ===\"PurchaseRequests\"){\n    msg.serviceLayer.body.Requester =reqSession[0].customAttributes.EmpID.toString();\n    msg.serviceLayer.body.RequesterName = reqSession[0].customAttributes.LastName + \",\" + reqSession[0].customAttributes.FirstName;\n    msg.serviceLayer.body.RequesterEmail = reqSession[0].customAttributes.Email\n    msg.serviceLayer.body.ReqType=171;\n}\nif (msg.serviceLayer.method ===\"NEO_JBS_TIMESHEET\"){\n    msg.serviceLayer.body.U_NEO_JBS_USERID =reqSession[0].customAttributes.EmpID;\n}\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif (msg.serviceLayer.method ===\"PurchaseRequests\"){\n    msg.serviceLayer.body.Requester =reqSession[0].customAttributes.EmpID.toString();\n    msg.serviceLayer.body.RequesterName = reqSession[0].customAttributes.LastName + \",\" + reqSession[0].customAttributes.FirstName;\n    msg.serviceLayer.body.RequesterEmail = reqSession[0].customAttributes.Email\n    msg.serviceLayer.body.ReqType=171;\n}\nif (msg.serviceLayer.method ===\"NEO_JBS_TIMESHEET\"){\n    msg.serviceLayer.body.U_NEO_JBS_USERID =reqSession[0].customAttributes.EmpID;\n}\nif (msg.serviceLayer.method === \"Quotations\" || msg.serviceLayer.method === \"Orders\"){\n    msg.serviceLayer.body.U_NEO_JBS_USERID = reqSession[0].customAttributes.salesPerson;\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3915,17 +3931,19 @@
         "id": "1386abdef8c3a2cb",
         "type": "function",
         "z": "10e8f1e2.a444de",
-        "name": "",
+        "name": "before Get",
         "func": "if (msg.serviceLayer.method.includes('BusinessPartners(')){\n    msg.serviceLayer.method +='?$select=CardName,CardCode,CurrentAccountBalance,FederalTaxID,AdditionalID,OpenDeliveryNotesBalance,OpenOrdersBalance,Industry,OwnerCode,U_front_office,SalesPersonCode,PayTermsGrpCode,U_Fido_Interno,U_AC_Fido_Assic,PeymentMethodCode,BPAddresses,ContactEmployees,Properties1,Properties2,Properties3,Properties4,Properties5,Properties6,Properties7,Properties8,Properties9,Properties10,Properties11,Properties12,Properties13,Properties14,Properties15,Properties16,Properties17,Properties18,Properties19,Properties20,Properties21,Properties22,Properties23,Properties24,Properties25,Properties26,Properties27,Properties28,Properties29,Properties30,Properties31,Properties32,Properties33,Properties34,Properties35,Properties36,Properties37,Properties38,Properties39,Properties40,Properties41,Properties42,Properties43,Properties44,Properties45,Properties46,Properties47,Properties48,Properties49,Properties50,Properties51,Properties52,Properties53,Properties54,Properties55,Properties56,Properties57,Properties58,Properties59,Properties60,Properties61,Properties62,Properties63,Properties64';\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 280,
+        "x": 290,
         "y": 880,
         "wires": [
-            []
+            [
+                "a696bd2a.7627a"
+            ]
         ]
     },
     {
@@ -11531,5 +11549,567 @@
                 "31dc959f2d73c37a"
             ]
         ]
+    },
+    {
+        "id": "470f9168df548945",
+        "type": "http response",
+        "z": "df177455398999d0",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 950,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "b0c76ec17e70e7cf",
+        "type": "HanaClient-request",
+        "z": "df177455398999d0",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 470,
+        "y": 140,
+        "wires": [
+            [
+                "da6b86a05143f045",
+                "cf1c2e082f8746b5"
+            ],
+            [
+                "4de5134933b661de",
+                "f1c6464320d2f038"
+            ]
+        ]
+    },
+    {
+        "id": "9c9ee3e05b641e07",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "df177455398999d0",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 160,
+        "wires": [
+            [
+                "54a52ebbf7df7012"
+            ],
+            [
+                "d1b3e0492a62bf2b"
+            ]
+        ]
+    },
+    {
+        "id": "54a52ebbf7df7012",
+        "type": "function",
+        "z": "df177455398999d0",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `\nselect * from \"@ENT_PORT_SHOPCART\" where \"Code\"=${reqSession[0].customAttributes.EmpID}\n`;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 80,
+        "wires": [
+            [
+                "5584eb37c3c20f38",
+                "835c3fb106e57833"
+            ]
+        ]
+    },
+    {
+        "id": "da6b86a05143f045",
+        "type": "debug",
+        "z": "df177455398999d0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 690,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4de5134933b661de",
+        "type": "debug",
+        "z": "df177455398999d0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 470,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "0e72d2ec8f65f30f",
+        "type": "http in",
+        "z": "df177455398999d0",
+        "name": "Check Out Cart",
+        "url": "/api/CheckoutCart",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "9c9ee3e05b641e07"
+            ]
+        ]
+    },
+    {
+        "id": "5584eb37c3c20f38",
+        "type": "debug",
+        "z": "df177455398999d0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "cf1c2e082f8746b5",
+        "type": "function",
+        "z": "df177455398999d0",
+        "name": "",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif(msg.payload && msg.payload.length===0){\n    var payload={\n        \"Code\": reqSession[0].customAttributes.EmpID,\n        \"Name\":\"\",\n        \"U_CartContent\":\"\"\n    }; \n    if (!msg.serviceLayer.headers)\n        msg.serviceLayer.headers = {};\n    msg.serviceLayer.headers[\"content-type\"] = msg.req.headers[\"content-type\"];\n    msg.serviceLayer.method = 'U_ENT_PORT_SHOPCART';\n    msg.serviceLayer.body=payload;\n    \n    return [null,msg];\n}\nmsg.payload=msg.payload[0];\nreturn [msg,null];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 140,
+        "wires": [
+            [
+                "9a43613b6bf40f14"
+            ],
+            [
+                "4ea60ff7d3b72fed"
+            ]
+        ]
+    },
+    {
+        "id": "835c3fb106e57833",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "df177455398999d0",
+        "name": "",
+        "x": 490,
+        "y": 80,
+        "wires": [
+            [
+                "b0c76ec17e70e7cf"
+            ]
+        ]
+    },
+    {
+        "id": "d1b3e0492a62bf2b",
+        "type": "link out",
+        "z": "df177455398999d0",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "70ada8f36d1110d7"
+        ],
+        "x": 345,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f1c6464320d2f038",
+        "type": "link out",
+        "z": "df177455398999d0",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "70ada8f36d1110d7"
+        ],
+        "x": 585,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "70ada8f36d1110d7",
+        "type": "link in",
+        "z": "df177455398999d0",
+        "name": "",
+        "links": [
+            "f1c6464320d2f038",
+            "d1b3e0492a62bf2b",
+            "9a43613b6bf40f14",
+            "18bbeda9f18c4cdd",
+            "91d94c59bea3873d"
+        ],
+        "x": 845,
+        "y": 140,
+        "wires": [
+            [
+                "470f9168df548945"
+            ]
+        ]
+    },
+    {
+        "id": "9a43613b6bf40f14",
+        "type": "link out",
+        "z": "df177455398999d0",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "70ada8f36d1110d7"
+        ],
+        "x": 755,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "4ea60ff7d3b72fed",
+        "type": "b1-service-layer-request",
+        "z": "df177455398999d0",
+        "server": "596459b.d78c4a8",
+        "name": "",
+        "serviceLayerMethod": "",
+        "httpMethod": "POST",
+        "slResponseObject": "cart Post",
+        "x": 730,
+        "y": 240,
+        "wires": [
+            [
+                "470f9168df548945"
+            ],
+            [
+                "470f9168df548945"
+            ]
+        ]
+    },
+    {
+        "id": "9f386eb5a6f459f6",
+        "type": "http in",
+        "z": "df177455398999d0",
+        "name": "Update Cart",
+        "url": "/api/updateCart",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "ef9270ee50cfa358"
+            ]
+        ]
+    },
+    {
+        "id": "ef9270ee50cfa358",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "df177455398999d0",
+        "name": "",
+        "env": [],
+        "x": 220,
+        "y": 500,
+        "wires": [
+            [
+                "bd247bb2d17ac6da"
+            ],
+            [
+                "18bbeda9f18c4cdd"
+            ]
+        ]
+    },
+    {
+        "id": "bd247bb2d17ac6da",
+        "type": "function",
+        "z": "df177455398999d0",
+        "name": "payload",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar payload = {\n    \"Code\": reqSession[0].customAttributes.EmpID,\n    \"Name\": \"\",\n    \"U_CartContent\": msg.req.body.cartData\n};\nif (!msg.serviceLayer.headers)\n    msg.serviceLayer.headers = {};\nmsg.serviceLayer.headers[\"content-type\"] = msg.req.headers[\"content-type\"];\nmsg.serviceLayer.method = `U_ENT_PORT_SHOPCART('${reqSession[0].customAttributes.EmpID}')`;\nmsg.serviceLayer.body = payload;\n// msg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 420,
+        "wires": [
+            [
+                "435002ad35c3041a",
+                "f434d694af34cd55"
+            ]
+        ]
+    },
+    {
+        "id": "18bbeda9f18c4cdd",
+        "type": "link out",
+        "z": "df177455398999d0",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "70ada8f36d1110d7"
+        ],
+        "x": 405,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "f434d694af34cd55",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "df177455398999d0",
+        "name": "",
+        "x": 550,
+        "y": 420,
+        "wires": [
+            [
+                "cbe00a80414a6d95"
+            ]
+        ]
+    },
+    {
+        "id": "435002ad35c3041a",
+        "type": "debug",
+        "z": "df177455398999d0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 470,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "cbe00a80414a6d95",
+        "type": "b1-service-layer-request",
+        "z": "df177455398999d0",
+        "server": "596459b.d78c4a8",
+        "name": "",
+        "serviceLayerMethod": "",
+        "httpMethod": "PUT",
+        "slResponseObject": "cart Post",
+        "x": 690,
+        "y": 480,
+        "wires": [
+            [
+                "ad33a9084fcf659d",
+                "7d2e5ff37223042c"
+            ],
+            [
+                "ad33a9084fcf659d",
+                "fb6a7c43776ac0da"
+            ]
+        ]
+    },
+    {
+        "id": "ad33a9084fcf659d",
+        "type": "http response",
+        "z": "df177455398999d0",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7d2e5ff37223042c",
+        "type": "debug",
+        "z": "df177455398999d0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 850,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "fb6a7c43776ac0da",
+        "type": "debug",
+        "z": "df177455398999d0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 850,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "75ca6e442a5925bf",
+        "type": "http in",
+        "z": "126e836d1563dc86",
+        "name": "Validate Rule",
+        "url": "/api/ValidateRule",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "6142ef19f0e7e2c2"
+            ]
+        ]
+    },
+    {
+        "id": "6142ef19f0e7e2c2",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "9a7a01afaf941d9d"
+            ],
+            [
+                "91d94c59bea3873d"
+            ]
+        ]
+    },
+    {
+        "id": "9a7a01afaf941d9d",
+        "type": "function",
+        "z": "126e836d1563dc86",
+        "name": "payload",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\n// var payload = {\n//     \"Code\": reqSession[0].customAttributes.EmpID,\n//     \"Name\": \"\",\n//     \"U_CartContent\": msg.req.body.cartData\n// };\n// if (!msg.serviceLayer.headers)\n//     msg.serviceLayer.headers = {};\n// msg.serviceLayer.headers[\"content-type\"] = msg.req.headers[\"content-type\"];\n// msg.serviceLayer.method = `U_ENT_PORT_SHOPCART('${reqSession[0].customAttributes.EmpID}')`;\n// msg.serviceLayer.body = payload;\n// msg.payload=msg.flowInfo.sql;\n\nif (msg.req.body.length===0 ){\n    msg.statusCode = 400;\n    msg.payload={\n        \"HTTPCode\": 0,\n        \"Error_Message\": \"Not validated\"\n\n    };\n    return [null,msg];\n}\nreturn [msg,null];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 160,
+        "wires": [
+            [
+                "3c9fa962636aca2c",
+                "7d494e04014f1b30"
+            ],
+            [
+                "7d494e04014f1b30"
+            ]
+        ]
+    },
+    {
+        "id": "91d94c59bea3873d",
+        "type": "link out",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "70ada8f36d1110d7"
+        ],
+        "x": 345,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "976369da54cd3b99",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "x": 660,
+        "y": 80,
+        "wires": [
+            [
+                "c5c0b0eba0a6c34a"
+            ]
+        ]
+    },
+    {
+        "id": "3c9fa962636aca2c",
+        "type": "debug",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "c5c0b0eba0a6c34a",
+        "type": "b1-service-layer-request",
+        "z": "126e836d1563dc86",
+        "server": "596459b.d78c4a8",
+        "name": "",
+        "serviceLayerMethod": "",
+        "httpMethod": "PUT",
+        "slResponseObject": "cart Post",
+        "x": 630,
+        "y": 240,
+        "wires": [
+            [
+                "7d494e04014f1b30",
+                "e80da9d376ac6f13"
+            ],
+            [
+                "7d494e04014f1b30",
+                "a2efd9b566e80469"
+            ]
+        ]
+    },
+    {
+        "id": "7d494e04014f1b30",
+        "type": "http response",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 870,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "e80da9d376ac6f13",
+        "type": "debug",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "a2efd9b566e80469",
+        "type": "debug",
+        "z": "126e836d1563dc86",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 280,
+        "wires": []
     }
 ]
