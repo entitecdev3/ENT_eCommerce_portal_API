@@ -213,6 +213,22 @@
         "env": []
     },
     {
+        "id": "8c51ee3b7ae835de",
+        "type": "tab",
+        "label": "Sales Quotation",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "addd85c3d5ea4e16",
+        "type": "tab",
+        "label": "Sales Order",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -3900,7 +3916,7 @@
         "type": "function",
         "z": "10e8f1e2.a444de",
         "name": "before POST",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif (msg.serviceLayer.method ===\"PurchaseRequests\"){\n    msg.serviceLayer.body.Requester =reqSession[0].customAttributes.EmpID.toString();\n    msg.serviceLayer.body.RequesterName = reqSession[0].customAttributes.LastName + \",\" + reqSession[0].customAttributes.FirstName;\n    msg.serviceLayer.body.RequesterEmail = reqSession[0].customAttributes.Email\n    msg.serviceLayer.body.ReqType=171;\n}\nif (msg.serviceLayer.method ===\"NEO_JBS_TIMESHEET\"){\n    msg.serviceLayer.body.U_NEO_JBS_USERID =reqSession[0].customAttributes.EmpID;\n}\nif (msg.serviceLayer.method === \"Quotations\" || msg.serviceLayer.method === \"Orders\"){\n    msg.serviceLayer.body.U_NEO_JBS_USERID = reqSession[0].customAttributes.salesPerson;\n}\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif (msg.serviceLayer.method ===\"PurchaseRequests\"){\n    msg.serviceLayer.body.Requester =reqSession[0].customAttributes.EmpID.toString();\n    msg.serviceLayer.body.RequesterName = reqSession[0].customAttributes.LastName + \",\" + reqSession[0].customAttributes.FirstName;\n    msg.serviceLayer.body.RequesterEmail = reqSession[0].customAttributes.Email\n    msg.serviceLayer.body.ReqType=171;\n}\nif (msg.serviceLayer.method ===\"NEO_JBS_TIMESHEET\"){\n    msg.serviceLayer.body.U_NEO_JBS_USERID =reqSession[0].customAttributes.EmpID;\n}\nif (msg.serviceLayer.method === \"Quotations\" || msg.serviceLayer.method === \"Orders\"){\n    msg.serviceLayer.body.SalesPersonCode = reqSession[0].customAttributes.salesPerson;\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -12111,5 +12127,359 @@
         "x": 790,
         "y": 280,
         "wires": []
+    },
+    {
+        "id": "0b0b2566a85e410b",
+        "type": "http response",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "d50e0ba0966faa52",
+        "type": "HanaClient-request",
+        "z": "8c51ee3b7ae835de",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 530,
+        "y": 180,
+        "wires": [
+            [
+                "ca4268fe47123c3b",
+                "236e9d40aad8c443"
+            ],
+            [
+                "af88f2ffcd49d598",
+                "3e40f39be24c6490",
+                "0b0b2566a85e410b"
+            ]
+        ]
+    },
+    {
+        "id": "3afcef28c1b82dbd",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 180,
+        "wires": [
+            [
+                "928c3a03e05a97a3"
+            ],
+            [
+                "0b0b2566a85e410b"
+            ]
+        ]
+    },
+    {
+        "id": "928c3a03e05a97a3",
+        "type": "function",
+        "z": "8c51ee3b7ae835de",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.oQuery;\nnode.warn(msg.req.query);\nif (oQuery && oQuery !== \"undefined\") {\n    node.warn(oQuery);\n    let zQuery = JSON.parse(oQuery);\n    oQuery = zQuery;\n    var fQuery = '';\n    for (const key in oQuery) { //iterate over the array of object\n        var value = oQuery[key];\n        node.warn(value);\n        // if()\n        // if (!fQuery) {\n        //     fQuery += ` WHERE `;\n        // }\n        // else {\n        fQuery += ' and ';\n        // }\n        if (oQuery[key] && oQuery[key] !== \"undefined\") {\n            switch (key) {\n                case 'U_NEO_JBS_STATUS':\n                    fQuery += `\"U_NEO_JBS_STATUS\" IN ('${value}')`;// + parseInt(value);\n                    break;\n                case 'U_NEO_JBS_INVIATO':\n                    fQuery += `\"U_NEO_JBS_INVIATO\"= '${value}'`;\n                    break;\n                case 'ProjectCode':\n                    fQuery += `\"ProjectCode\"= ${parseInt(value)} and \"Project_Structure_Owner_EmpID_List\" like '%,${reqSession[0].customAttributes.EmpID},%'`;\n                    break;\n                case 'TeamList_Supervisor_Of_UserEmployee':\n                    fQuery += `\"TeamList_Supervisor_Of_UserEmployee\" like '%,${value},%'`;\n                    break;\n                case 'DocDate':\n                    const oData = value;\n                    fQuery += `\"DocDate\">='${oData.end}' and \"DocDate\"<'${oData.start}'`;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n    }\n};\nnode.warn(fQuery);\nvar sql = `select * from OQUT where \"SlpCode\"=${reqSession[0].customAttributes.salesPerson}` + fQuery;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 160,
+        "wires": [
+            [
+                "5f2009176754d20a",
+                "b4a85629047445d5"
+            ]
+        ]
+    },
+    {
+        "id": "ca4268fe47123c3b",
+        "type": "debug",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "af88f2ffcd49d598",
+        "type": "debug",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 550,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "3e40f39be24c6490",
+        "type": "function",
+        "z": "8c51ee3b7ae835de",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "8e31ae0cdc78589e",
+        "type": "http in",
+        "z": "8c51ee3b7ae835de",
+        "name": "GET Sales Quotation",
+        "url": "/api/getSalesQuotation",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 120,
+        "wires": [
+            [
+                "3afcef28c1b82dbd"
+            ]
+        ]
+    },
+    {
+        "id": "5f2009176754d20a",
+        "type": "debug",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "236e9d40aad8c443",
+        "type": "function",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 160,
+        "wires": [
+            [
+                "0b0b2566a85e410b"
+            ]
+        ]
+    },
+    {
+        "id": "b4a85629047445d5",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "8c51ee3b7ae835de",
+        "name": "",
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "d50e0ba0966faa52"
+            ]
+        ]
+    },
+    {
+        "id": "b9ab2c025c188425",
+        "type": "http response",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 910,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "c27dd90f9d6003f5",
+        "type": "HanaClient-request",
+        "z": "addd85c3d5ea4e16",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 510,
+        "y": 200,
+        "wires": [
+            [
+                "a09c5ab97d4ce3f9",
+                "3a89e0b680e72574"
+            ],
+            [
+                "9f1b987c7161f8f6",
+                "9645e470546f5802",
+                "b9ab2c025c188425"
+            ]
+        ]
+    },
+    {
+        "id": "73ae8ec5aa951002",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "env": [],
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "64d4661e28c3b22b"
+            ],
+            [
+                "b9ab2c025c188425"
+            ]
+        ]
+    },
+    {
+        "id": "64d4661e28c3b22b",
+        "type": "function",
+        "z": "addd85c3d5ea4e16",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.oQuery;\nnode.warn(msg.req.query);\nif(oQuery && oQuery!==\"undefined\"){\n    node.warn(oQuery);\n    let zQuery=JSON.parse(oQuery);\n    oQuery=zQuery;\n    var fQuery = '';\n    for (const key in oQuery) { //iterate over the array of object\n        var value = oQuery[key];\n        node.warn(value);\n        // if()\n        // if (!fQuery) {\n        //     fQuery += ` WHERE `;\n        // }\n        // else {\n            fQuery += ' and ';\n        // }\n        if (oQuery[key] && oQuery[key] !== \"undefined\") {\n            switch (key) {\n                case 'U_NEO_JBS_STATUS':\n                    fQuery += `\"U_NEO_JBS_STATUS\" IN ('${value}')`;// + parseInt(value);\n                    break;\n                case 'U_NEO_JBS_INVIATO':\n                    fQuery += `\"U_NEO_JBS_INVIATO\"= '${value}'`;\n                    break;\n                case 'ProjectCode':\n                    fQuery += `\"ProjectCode\"= ${parseInt(value)} and \"Project_Structure_Owner_EmpID_List\" like '%,${reqSession[0].customAttributes.EmpID},%'`;\n                    break;\n                case 'TeamList_Supervisor_Of_UserEmployee':\n                    fQuery += `\"TeamList_Supervisor_Of_UserEmployee\" like '%,${value},%'`;\n                    break;\n                case 'DocDate':\n                    const oData = value;\n                    fQuery += `\"DocDate\">='${oData.end}' and \"DocDate\"<'${oData.start}'`;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n    }\n};\nnode.warn(fQuery);\n\nvar sql = `select \"DocEntry\",\"DocNum\",\"CardCode\",\"CardName\",\"DocTotal\",\"DiscSum\" from ORDR where \"SlpCode\"=${reqSession[0].customAttributes.salesPerson}` + fQuery;\nif (!fQuery) {\n    var sql = `select \"DocEntry\",\"DocNum\",\"CardCode\",\"CardName\",\"DocTotal\",\"DiscSum\" from ORDR where \"SlpCode\"=${reqSession[0].customAttributes.salesPerson}`;\n\n}\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 160,
+        "wires": [
+            [
+                "7dd2c019f9423eac",
+                "c9f8857ea1d6f32a"
+            ]
+        ]
+    },
+    {
+        "id": "a09c5ab97d4ce3f9",
+        "type": "debug",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 650,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "9f1b987c7161f8f6",
+        "type": "debug",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 530,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "9645e470546f5802",
+        "type": "function",
+        "z": "addd85c3d5ea4e16",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "3b3a3881ac9e59d6",
+        "type": "http in",
+        "z": "addd85c3d5ea4e16",
+        "name": "GET Sales Order",
+        "url": "/api/getSalesOrder",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 140,
+        "wires": [
+            [
+                "73ae8ec5aa951002"
+            ]
+        ]
+    },
+    {
+        "id": "7dd2c019f9423eac",
+        "type": "debug",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 390,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "3a89e0b680e72574",
+        "type": "function",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 180,
+        "wires": [
+            [
+                "b9ab2c025c188425"
+            ]
+        ]
+    },
+    {
+        "id": "c9f8857ea1d6f32a",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "addd85c3d5ea4e16",
+        "name": "",
+        "x": 470,
+        "y": 120,
+        "wires": [
+            [
+                "c27dd90f9d6003f5"
+            ]
+        ]
     }
 ]
