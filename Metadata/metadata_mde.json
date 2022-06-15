@@ -6,6 +6,13 @@
             "TableType": "bott_NoObject",
             "Archivable": "tNO",
             "ArchiveDateField": null
+        },
+        {
+            "TableName": "ENT_PORT_SHOPCART",
+            "TableDescription": "ENT - Shop Cart",
+            "TableType": "bott_NoObject",
+            "Archivable": "tNO",
+            "ArchiveDateField": null
         }
     ],
     "metadataUDOs": [],
@@ -39,6 +46,22 @@
             "TableName": "@ENT_PORTAL_PARAMS",
             "FieldID": 0,
             "EditSize": null,
+            "Mandatory": "tNO",
+            "LinkedUDO": null,
+            "LinkedSystemObject": null,
+            "ValidValuesMD": []
+        },
+        {
+            "Name": "CartContent",
+            "Type": "db_Memo",
+            "Size": 8,
+            "Description": "Cart Content JSON",
+            "SubType": "st_None",
+            "LinkedTable": null,
+            "DefaultValue": null,
+            "TableName": "@ENT_PORT_SHOPCART",
+            "FieldID": 0,
+            "EditSize": 10,
             "Mandatory": "tNO",
             "LinkedUDO": null,
             "LinkedSystemObject": null,
