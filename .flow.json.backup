@@ -2939,7 +2939,8 @@
         "y": 960,
         "wires": [
             [
-                "0fa06d94e8612003"
+                "0fa06d94e8612003",
+                "73c1425aa0946963"
             ],
             [
                 "2492d957.436966"
@@ -2978,13 +2979,15 @@
         "z": "5d59b9ac.ec0a48",
         "server": "b298e45c.688258",
         "sql": "select * from OHEM where \"email\" =   'giuseppe.delaurentiis@neosperience.com'",
-        "x": 550,
-        "y": 1040,
+        "x": 510,
+        "y": 1060,
         "wires": [
             [
-                "8770ae14ce611a7a"
+                "96e00c458080f060"
             ],
-            []
+            [
+                "2624ab867f8b78e8"
+            ]
         ]
     },
     {
@@ -2998,7 +3001,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 700,
+        "x": 760,
         "y": 1040,
         "wires": [
             [
@@ -3037,6 +3040,55 @@
         "headers": {},
         "x": 890,
         "y": 360,
+        "wires": []
+    },
+    {
+        "id": "73c1425aa0946963",
+        "type": "function",
+        "z": "5d59b9ac.ec0a48",
+        "name": "lastlogin Update",
+        "func": "var key = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nmsg.configOverrideHana = {};\nmsg.configOverrideHana.database = msg.req.body.database;\nmsg.configOverride.database = msg.req.body.database;\nvar d=new Date();\n\nvar loginDate = d.toISOString().split(\"T\")[0] + \" \" + d.toISOString().split(\"T\")[1].split(\".\")[0];\nmsg.flowInfo.sql = `UPDATE OHEM\nSET \"U_ENT_LastLogin\" = '${loginDate.slice(0, 16)}'\nWHERE \"empID\"='${msg.customAttributes.EmpID}'`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1040,
+        "wires": [
+            [
+                "526a3946b792a341"
+            ]
+        ]
+    },
+    {
+        "id": "96e00c458080f060",
+        "type": "debug",
+        "z": "5d59b9ac.ec0a48",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 630,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "2624ab867f8b78e8",
+        "type": "debug",
+        "z": "5d59b9ac.ec0a48",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 630,
+        "y": 1080,
         "wires": []
     },
     {
@@ -6891,7 +6943,7 @@
         "type": "function",
         "z": "6a7a3582c19005df",
         "name": "sql",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n\n// msg.flowInfo.sql = `SELECT * FROM \"OHEM\" where \"manager\"='${reqSession[0].customAttributes.EmpID}'`;\nmsg.flowInfo.sql = `SELECT \"OUSR\".\"USER_CODE\",\"OHEM\".* FROM \"OHEM\" left join \"OUSR\" on \"OUSR\".\"USERID\"=\"OHEM\".\"userId\" where \"OHEM\".\"manager\"='${reqSession[0].customAttributes.EmpID}'`;\n\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n\n// msg.flowInfo.sql = `SELECT * FROM \"OHEM\" where \"manager\"='${reqSession[0].customAttributes.EmpID}'`;\nmsg.flowInfo.sql = `SELECT \"OUSR\".\"USER_CODE\",\"OHEM\".* FROM \"OHEM\" left join \"OUSR\" on \"OUSR\".\"USERID\"=\"OHEM\".\"userId\" where \"OHEM\".\"manager\"='${reqSession[0].customAttributes.EmpID}'  and \"OHEM\".\"Active\"='Y'`;\n\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -12181,7 +12233,7 @@
         "type": "function",
         "z": "8c51ee3b7ae835de",
         "name": "sql",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.oQuery;\nnode.warn(msg.req.query);\nif (oQuery && oQuery !== \"undefined\") {\n    node.warn(oQuery);\n    let zQuery = JSON.parse(oQuery);\n    oQuery = zQuery;\n    var fQuery = '';\n    for (const key in oQuery) { //iterate over the array of object\n        var value = oQuery[key];\n        node.warn(value);\n        // if()\n        // if (!fQuery) {\n        //     fQuery += ` WHERE `;\n        // }\n        // else {\n        fQuery += ' and ';\n        // }\n        if (oQuery[key] && oQuery[key] !== \"undefined\") {\n            switch (key) {\n                case 'U_NEO_JBS_STATUS':\n                    fQuery += `\"U_NEO_JBS_STATUS\" IN ('${value}')`;// + parseInt(value);\n                    break;\n                case 'U_NEO_JBS_INVIATO':\n                    fQuery += `\"U_NEO_JBS_INVIATO\"= '${value}'`;\n                    break;\n                case 'ProjectCode':\n                    fQuery += `\"ProjectCode\"= ${parseInt(value)} and \"Project_Structure_Owner_EmpID_List\" like '%,${reqSession[0].customAttributes.EmpID},%'`;\n                    break;\n                case 'TeamList_Supervisor_Of_UserEmployee':\n                    fQuery += `\"TeamList_Supervisor_Of_UserEmployee\" like '%,${value},%'`;\n                    break;\n                case 'DocDate':\n                    const oData = value;\n                    fQuery += `\"DocDate\">='${oData.end}' and \"DocDate\"<'${oData.start}'`;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n    }\n};\nnode.warn(fQuery);\nvar sql = `select * from OQUT where \"SlpCode\"=${reqSession[0].customAttributes.salesPerson}` + fQuery;\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.oQuery;\nnode.warn(msg.req.query);\nif (oQuery && oQuery !== \"undefined\") {\n    node.warn(oQuery);\n    let zQuery = JSON.parse(oQuery);\n    oQuery = zQuery;\n    var fQuery = '';\n    for (const key in oQuery) { //iterate over the array of object\n        var value = oQuery[key];\n        node.warn(value);\n        // if()\n        // if (!fQuery) {\n        //     fQuery += ` WHERE `;\n        // }\n        // else {\n        fQuery += ' and ';\n        // }\n        if (oQuery[key] && oQuery[key] !== \"undefined\") {\n            switch (key) {\n                case 'U_NEO_JBS_STATUS':\n                    fQuery += `\"U_NEO_JBS_STATUS\" IN ('${value}')`;// + parseInt(value);\n                    break;\n                case 'CardCode':\n                    fQuery += `\"CardCode\"= '${value}'`;\n                    break;\n                case 'ProjectCode':\n                    fQuery += `\"ProjectCode\"= ${parseInt(value)} and \"Project_Structure_Owner_EmpID_List\" like '%,${reqSession[0].customAttributes.EmpID},%'`;\n                    break;\n                case 'TeamList_Supervisor_Of_UserEmployee':\n                    fQuery += `\"TeamList_Supervisor_Of_UserEmployee\" like '%,${value},%'`;\n                    break;\n                case 'DocDate':\n                    const oData = value;\n                    fQuery += `\"DocDate\">='${oData.end}' and \"DocDate\"<'${oData.start}'`;\n                    break;\n                default:\n                    break;\n            }\n        }\n\n    }\n};\nnode.warn(fQuery);\nvar sql = `select * from OQUT where \"SlpCode\"=${reqSession[0].customAttributes.salesPerson}` + fQuery;\nif (!fQuery) {\n    var sql = `select * from OQUT where \"SlpCode\"=${reqSession[0].customAttributes.salesPerson}`;\n}\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
