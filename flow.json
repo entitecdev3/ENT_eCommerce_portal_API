@@ -229,6 +229,14 @@
         "env": []
     },
     {
+        "id": "08524c2b396022f3",
+        "type": "tab",
+        "label": "GET VAT RATE BY CODE",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -4000,7 +4008,7 @@
         "type": "function",
         "z": "10e8f1e2.a444de",
         "name": "before Get",
-        "func": "if (msg.serviceLayer.method.includes('BusinessPartners(')){\n    msg.serviceLayer.method +='?$select=CardName,CardCode,CurrentAccountBalance,FederalTaxID,AdditionalID,OpenDeliveryNotesBalance,OpenOrdersBalance,Industry,OwnerCode,U_front_office,SalesPersonCode,PayTermsGrpCode,U_Fido_Interno,U_AC_Fido_Assic,PeymentMethodCode,BPAddresses,ContactEmployees,Properties1,Properties2,Properties3,Properties4,Properties5,Properties6,Properties7,Properties8,Properties9,Properties10,Properties11,Properties12,Properties13,Properties14,Properties15,Properties16,Properties17,Properties18,Properties19,Properties20,Properties21,Properties22,Properties23,Properties24,Properties25,Properties26,Properties27,Properties28,Properties29,Properties30,Properties31,Properties32,Properties33,Properties34,Properties35,Properties36,Properties37,Properties38,Properties39,Properties40,Properties41,Properties42,Properties43,Properties44,Properties45,Properties46,Properties47,Properties48,Properties49,Properties50,Properties51,Properties52,Properties53,Properties54,Properties55,Properties56,Properties57,Properties58,Properties59,Properties60,Properties61,Properties62,Properties63,Properties64';\n}\nreturn msg;",
+        "func": "if (msg.serviceLayer.method.includes('BusinessPartners(') && !msg.serviceLayer.method.includes('?')){\n    msg.serviceLayer.method +='?$select=CardName,CardCode,CurrentAccountBalance,FederalTaxID,AdditionalID,OpenDeliveryNotesBalance,OpenOrdersBalance,Industry,OwnerCode,U_front_office,SalesPersonCode,PayTermsGrpCode,U_Fido_Interno,U_AC_Fido_Assic,PeymentMethodCode,BPAddresses,ContactEmployees,Properties1,Properties2,Properties3,Properties4,Properties5,Properties6,Properties7,Properties8,Properties9,Properties10,Properties11,Properties12,Properties13,Properties14,Properties15,Properties16,Properties17,Properties18,Properties19,Properties20,Properties21,Properties22,Properties23,Properties24,Properties25,Properties26,Properties27,Properties28,Properties29,Properties30,Properties31,Properties32,Properties33,Properties34,Properties35,Properties36,Properties37,Properties38,Properties39,Properties40,Properties41,Properties42,Properties43,Properties44,Properties45,Properties46,Properties47,Properties48,Properties49,Properties50,Properties51,Properties52,Properties53,Properties54,Properties55,Properties56,Properties57,Properties58,Properties59,Properties60,Properties61,Properties62,Properties63,Properties64';\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -12531,6 +12539,185 @@
         "wires": [
             [
                 "c27dd90f9d6003f5"
+            ]
+        ]
+    },
+    {
+        "id": "c4470a7a1521ca9e",
+        "type": "http response",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 970,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "51adcb5071f0bf32",
+        "type": "HanaClient-request",
+        "z": "08524c2b396022f3",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 570,
+        "y": 180,
+        "wires": [
+            [
+                "0c45b31a2922ebca",
+                "9ba60f49958d3b86"
+            ],
+            [
+                "8e6555cf73c886d5",
+                "35eb45138ea703f1",
+                "c4470a7a1521ca9e"
+            ]
+        ]
+    },
+    {
+        "id": "bd6218f7a3730130",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "env": [],
+        "x": 200,
+        "y": 180,
+        "wires": [
+            [
+                "22e87a9005c1e6a7"
+            ],
+            [
+                "c4470a7a1521ca9e"
+            ]
+        ]
+    },
+    {
+        "id": "22e87a9005c1e6a7",
+        "type": "function",
+        "z": "08524c2b396022f3",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.ItemCode;\nnode.warn(msg.req.query);\n\n\n\nvar sql = `select T1.\"ItemCode\",T2.\"Rate\" from \"OITM\" T1\ninner join \"OVTG\" T2 on T1.\"VatGourpSa\"=T2.\"Code\"\nwhere T1.\"ItemCode\" IN (${oQuery.toString()})` ;\n\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "2d91ea1a6e693dad",
+                "b01077c925c53d2d"
+            ]
+        ]
+    },
+    {
+        "id": "0c45b31a2922ebca",
+        "type": "debug",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 710,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "8e6555cf73c886d5",
+        "type": "debug",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 590,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "35eb45138ea703f1",
+        "type": "function",
+        "z": "08524c2b396022f3",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "4a7104f390d308cc",
+        "type": "http in",
+        "z": "08524c2b396022f3",
+        "name": "GET VAT rate",
+        "url": "/api/getVATRATE",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 120,
+        "wires": [
+            [
+                "bd6218f7a3730130"
+            ]
+        ]
+    },
+    {
+        "id": "2d91ea1a6e693dad",
+        "type": "debug",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9ba60f49958d3b86",
+        "type": "function",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "func": "// if(msg.payload.length>0){\n//     msg.payload=msg.payload[0].Rate;\n// }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 160,
+        "wires": [
+            [
+                "c4470a7a1521ca9e"
+            ]
+        ]
+    },
+    {
+        "id": "b01077c925c53d2d",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "08524c2b396022f3",
+        "name": "",
+        "x": 530,
+        "y": 100,
+        "wires": [
+            [
+                "51adcb5071f0bf32"
             ]
         ]
     }
