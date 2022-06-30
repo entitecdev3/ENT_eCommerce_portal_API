@@ -1,0 +1,38 @@
+<mvc:View xmlns:core="sap.ui.core" controllerName="ent.metadata.pockpt.metadatacockpit.controller.Main" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <Table items="{path: 'local>/companies'}" mode="MultiSelect">
+                <headerToolbar>
+				<OverflowToolbar>
+					<!-- <Title text="Products" level="H2" /> -->
+                    <Button text="Update Metadata"/>
+					<ToolbarSpacer />
+                    <Button icon="sap-icon://refresh" press="getCompanies"/>
+				</OverflowToolbar>
+			</headerToolbar>
+                <columns>
+                    <Column  hAlign="Begin" mergeDuplicates="true">
+                        <Text text="{i18n>Company Name}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>DataBase}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>Status}" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem vAlign="Middle">
+                        <cells>
+                            <Text text="{local>CompanyFullName}" />
+                            <Text text="{local>dbName}" />
+                            <core:Icon src="{path:'local>Status',formatter:'.formatStatus'}" 
+                                color="{path:'local>Status',formatter:'.formatColor'}"
+                                backgroundColor="{path:'local>Status',formatter:'.formatColor'}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

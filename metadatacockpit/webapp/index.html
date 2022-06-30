@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Metadata Cockpit</title>
+    <title>eCommerce Portal</title>
+	<link rel="shortcut icon" type="image/x-icon" href="https://icon-library.com/images/shopping-cart-icon-white/shopping-cart-icon-white-12.jpg">
+    <style>
+        html, body, body > div, #container, #container-uiarea {
+            height: 100%;
+        }
+    </style>
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.96.7/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_fiori_3"
+        data-sap-ui-resourceroots='{
+            "ent.metadata.pockpt.metadatacockpit": "./"
+        }'
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted"
+    ></script>
+    <script id="locate-reuse-libs" src="./utils/locate-reuse-libs.js"
+        data-sap-ui-manifest-uri="./manifest.json"
+        data-sap-ui-componentName="ent.metadata.pockpt.metadatacockpit">
+    </script> 
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content">
+    <div
+        data-sap-ui-component
+        data-name="ent.metadata.pockpt.metadatacockpit"
+        data-id="container"
+        data-settings='{"id" : "ent.metadata.pockpt.metadatacockpit"}'
+        data-handle-validation="true"
+    ></div>
+</body>
+</html>

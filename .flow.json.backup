@@ -237,6 +237,14 @@
         "env": []
     },
     {
+        "id": "5e32f6c26e2f5357",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "e6958271.bfc86",
         "type": "subflow",
         "name": "login common params check",
@@ -12595,7 +12603,7 @@
         "type": "function",
         "z": "08524c2b396022f3",
         "name": "sql",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.ItemCode;\nnode.warn(msg.req.query);\n\n\n\nvar sql = `select T2.\"Rate\" from \"OITM\" T1\ninner join \"OVTG\" T2 on T1.\"VatGourpSa\"=T2.\"Code\"\nwhere T1.\"ItemCode\" IN (${oQuery.toString()})` ;\n\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\nvar oQuery = msg.req.query.ItemCode;\nnode.warn(msg.req.query);\n\n\n\nvar sql = `select T1.\"ItemCode\",T2.\"Rate\" from \"OITM\" T1\ninner join \"OVTG\" T2 on T1.\"VatGourpSa\"=T2.\"Code\"\nwhere T1.\"ItemCode\" IN (${oQuery.toString()})` ;\n\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -12718,6 +12726,234 @@
         "wires": [
             [
                 "51adcb5071f0bf32"
+            ]
+        ]
+    },
+    {
+        "id": "f64aadaaaf7e685e",
+        "type": "http in",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "url": "/cockpit/*",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 120,
+        "wires": [
+            [
+                "a5bc8e1a24621b76"
+            ]
+        ]
+    },
+    {
+        "id": "a5bc8e1a24621b76",
+        "type": "static",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "folder": "projects\\ENT_Neo_TimeSheet_Prototype_API\\metadatacockpit/webapp",
+        "x": 350,
+        "y": 120,
+        "wires": [
+            [
+                "7180488741929558"
+            ]
+        ]
+    },
+    {
+        "id": "7180488741929558",
+        "type": "http response",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 570,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "7b3f45b19b06820c",
+        "type": "settings-config",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "x": 130,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9a45534d9d4bed7f",
+        "type": "http response",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 950,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "7e2abac0db865009",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "7bd93379078afbd4",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "func": "let companies = msg.payload;\n\nif (msg.flowInfo.config.portal) {\n    //2021.03.27 - [Vlad] - added possibility to filter company list \n    const regexPath = msg.flowInfo.config.portal['ENT_COMP_LIST_REGEX']\n    const companiesFiltered = msg.payload.filter(comp => {\n        //var path = new RegExp(\"^((DEV_GGR)(.(?!_DB$))+)$\",\"gmi\");\n        var path = new RegExp(regexPath);\n        return path.test(comp.dbName)\n    });\n    companies = companiesFiltered;\n}\nelse {\n    companies = [{ \"dbName\": \"NODB\", \"cmpName\": \"NO DATABASE - verificare config_flow.json - proprieta portal.ENT_COMP_LIST_REGEX\", \"versStr\": \"???\", \"dbUser\": \"???\", \"LOC\": \"???\", \"cmpStatus\": \"?\" }];\n}\n\n// const v2res = {\n    // d: {\n        // '__count': companies.length,\n        var results=companies.map(comp => {\n            const { dbName, cmpName } = comp;\n            const v2comp = {\n                cmpName,\n                dbName,\n                CompanyFullName: `${cmpName} (${dbName})`\n            }\n\n            return v2comp;\n        })\n    // }\n// }\n\nmsg.payload = results;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 300,
+        "wires": [
+            [
+                "dffc68795bb83f4b"
+            ]
+        ]
+    },
+    {
+        "id": "b235df494fc6d2e3",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "94c2efa4cf75fe5d",
+        "type": "HanaClient-request",
+        "z": "5e32f6c26e2f5357",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 530,
+        "y": 320,
+        "wires": [
+            [
+                "68cc1e1775e8b0ac",
+                "7bd93379078afbd4"
+            ],
+            [
+                "b235df494fc6d2e3",
+                "7e2abac0db865009",
+                "9a45534d9d4bed7f"
+            ]
+        ]
+    },
+    {
+        "id": "d64aa4c928d729f7",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 530,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "68cc1e1775e8b0ac",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "1beff5a0ffd77d02",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "sql",
+        "func": "msg.configOverride = {};\nif (!msg.flowInfo)\n    msg.flowInfo = {};\nmsg.flowInfo.sql = 'call SBOCOMMON.TMSP_GETCOMPLIST';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 320,
+        "wires": [
+            [
+                "d64aa4c928d729f7",
+                "94c2efa4cf75fe5d"
+            ]
+        ]
+    },
+    {
+        "id": "369836022ac58c43",
+        "type": "subflow:8b68de83.9195b",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "x": 210,
+        "y": 320,
+        "wires": [
+            [
+                "1beff5a0ffd77d02"
+            ]
+        ]
+    },
+    {
+        "id": "b82129eccece5e16",
+        "type": "http in",
+        "z": "5e32f6c26e2f5357",
+        "name": "Get Companies",
+        "url": "/api/getMetaDataCompanies",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 240,
+        "wires": [
+            [
+                "369836022ac58c43"
+            ]
+        ]
+    },
+    {
+        "id": "dffc68795bb83f4b",
+        "type": "metadata-engine",
+        "z": "5e32f6c26e2f5357",
+        "configFileName": "config_flow.json",
+        "configType": "export-metadata",
+        "x": 890,
+        "y": 240,
+        "wires": [
+            [
+                "9a45534d9d4bed7f"
+            ],
+            [
+                "9a45534d9d4bed7f"
             ]
         ]
     }

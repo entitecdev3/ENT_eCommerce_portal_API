@@ -1,0 +1,84 @@
+sap.ui.define([
+	"sap/ui/core/mvc/Controller",
+	"sap/ui/core/routing/History",
+	"ent/metadata/pockpt/metadatacockpit/dbapi/dbapi",
+	"sap/ui/core/Fragment",
+	"sap/ui/model/json/JSONModel",
+	"sap/m/MessageToast",
+	"../model/formatter",
+	"sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator"
+], function (Controller, History, dbapi,Fragment,JSONModel,MessageToast,formatter,Filter,FilterOperator) {
+	"use strict";
+
+	return Controller.extend("ent.metadata.pockpt.metadatacockpit.controller.BaseController", {
+		middleWare: dbapi,
+		/**
+		 * Convenience method for accessing the router in every controller of the application.
+		 * @public
+		 * @returns {sap.ui.core.routing.Router} the router for this component
+		 */
+		/**
+		 * @override
+		 */
+		 formatter: formatter,
+		onInit: function () {
+			// Controller.prototype.onInit.apply(this, arguments);
+
+
+		},
+		getRouter: function () {
+			return this.getOwnerComponent().getRouter();
+		},
+
+		/**
+		 * Convenience method for getting the view model by name in every controller of the application.
+		 * @public
+		 * @param {string} sName the model name
+		 * @returns {sap.ui.model.Model} the model instance
+		 */
+		getModel: function (sName) {
+			return this.getView().getModel(sName);
+		},
+
+		/**
+		 * Convenience method for setting the view model in every controller of the application.
+		 * @public
+		 * @param {sap.ui.model.Model} oModel the model instance
+		 * @param {string} sName the model name
+		 * @returns {sap.ui.mvc.View} the view instance
+		 */
+		setModel: function (oModel, sName) {
+			return this.getView().setModel(oModel, sName);
+		},
+
+		/**
+		 * Convenience method for getting the resource bundle.
+		 * @public
+		 * @returns {sap.ui.model.resource.ResourceModel} the resourceModel of the component
+		 */
+		getResourceBundle: function () {
+			return this.getOwnerComponent().getModel("i18n").getResourceBundle();
+		},
+
+		/**
+		 * Event handler for navigating back.
+		 * It there is a history entry we go one step back in the browser history
+		 * If not, it will replace the current entry of the browser history with the master route.
+		 * @public
+		 */
+		 getCompanies:function(){
+			var that=this;
+			this.middleWare.callMiddleWare("/getMetaDataCompanies", "GET", {})
+					.then(function (data, status, xhr) {
+						
+						that.getModel("local").setProperty("/companies", data);
+						
+					})
+					.catch(function (jqXhr, textStatus, errorMessage) {
+						
+						that.middleWare.errorHandler(jqXhr,that);
+					});
+		},
+	});
+});
