@@ -239,7 +239,7 @@
     {
         "id": "5e32f6c26e2f5357",
         "type": "tab",
-        "label": "Flow 2",
+        "label": "[CockPit] Metadata Ui",
         "disabled": false,
         "info": "",
         "env": []
@@ -12945,13 +12945,254 @@
         "type": "metadata-engine",
         "z": "5e32f6c26e2f5357",
         "configFileName": "config_flow.json",
-        "configType": "export-metadata",
+        "configType": "check-metadata",
         "x": 890,
         "y": 240,
         "wires": [
             [
-                "9a45534d9d4bed7f"
+                "7832d0febb57b625"
             ],
+            [
+                "9a45534d9d4bed7f"
+            ]
+        ]
+    },
+    {
+        "id": "8ec5e48367602301",
+        "type": "http response",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 950,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "c47ae638e394679c",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "4004f990a791d05a",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "func": "let companies = msg.payload;\n\nif (msg.flowInfo.config.portal) {\n    //2021.03.27 - [Vlad] - added possibility to filter company list \n    const regexPath = msg.flowInfo.config.portal['ENT_COMP_LIST_REGEX']\n    const companiesFiltered = msg.payload.filter(comp => {\n        //var path = new RegExp(\"^((DEV_GGR)(.(?!_DB$))+)$\",\"gmi\");\n        var path = new RegExp(regexPath);\n        return path.test(comp.dbName)\n    });\n    companies = companiesFiltered;\n}\nelse {\n    companies = [{ \"dbName\": \"NODB\", \"cmpName\": \"NO DATABASE - verificare config_flow.json - proprieta portal.ENT_COMP_LIST_REGEX\", \"versStr\": \"???\", \"dbUser\": \"???\", \"LOC\": \"???\", \"cmpStatus\": \"?\" }];\n}\n\n// const v2res = {\n    // d: {\n        // '__count': companies.length,\n        var results=companies.map(comp => {\n            const { dbName, cmpName } = comp;\n            const v2comp = {\n                cmpName,\n                dbName,\n                CompanyFullName: `${cmpName} (${dbName})`\n            }\n\n            return v2comp;\n        })\n    // }\n// }\n\nmsg.payload = results;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 580,
+        "wires": [
+            [
+                "febbd0b2319351f0"
+            ]
+        ]
+    },
+    {
+        "id": "ca5b123b2ac30ba3",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "43d9e2c62f7e77f3",
+        "type": "HanaClient-request",
+        "z": "5e32f6c26e2f5357",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 530,
+        "y": 600,
+        "wires": [
+            [
+                "910d033970d61cad",
+                "4004f990a791d05a"
+            ],
+            [
+                "ca5b123b2ac30ba3",
+                "c47ae638e394679c",
+                "8ec5e48367602301"
+            ]
+        ]
+    },
+    {
+        "id": "b6d635ebda040f12",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 530,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "910d033970d61cad",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "fa23f17383fe4727",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "sql",
+        "func": "msg.configOverride = {};\nif (!msg.flowInfo)\n    msg.flowInfo = {};\nmsg.flowInfo.sql = 'call SBOCOMMON.TMSP_GETCOMPLIST';\nnode.warn(msg.req.query.Schema);\nnode.warn(typeof(msg.req.query.Schema));\nnode.warn(JSON.parse(msg.req.query.Schema));\nvar oSchema = JSON.parse(msg.req.query.Schema);\nmsg.schema=oSchema;\nmsg.payload=oSchema;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 600,
+        "wires": [
+            [
+                "b6d635ebda040f12",
+                "8ec5e48367602301"
+            ]
+        ]
+    },
+    {
+        "id": "07885eca71612188",
+        "type": "subflow:8b68de83.9195b",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "x": 210,
+        "y": 600,
+        "wires": [
+            [
+                "fa23f17383fe4727"
+            ]
+        ]
+    },
+    {
+        "id": "1986571b8f006ccf",
+        "type": "http in",
+        "z": "5e32f6c26e2f5357",
+        "name": "Update Metadata Companies",
+        "url": "/api/UpdateMetadata",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 520,
+        "wires": [
+            [
+                "07885eca71612188"
+            ]
+        ]
+    },
+    {
+        "id": "febbd0b2319351f0",
+        "type": "metadata-engine",
+        "z": "5e32f6c26e2f5357",
+        "configFileName": "config_flow.json",
+        "configType": "check-metadata",
+        "x": 890,
+        "y": 520,
+        "wires": [
+            [
+                "8ec5e48367602301"
+            ],
+            [
+                "8ec5e48367602301"
+            ]
+        ]
+    },
+    {
+        "id": "8d80ff44388c7c4c",
+        "type": "inject",
+        "z": "5e32f6c26e2f5357",
+        "name": "onStart",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "start flow injected.",
+        "payloadType": "str",
+        "x": 140,
+        "y": 700,
+        "wires": [
+            [
+                "70b929faa148ad86",
+                "369836022ac58c43"
+            ]
+        ]
+    },
+    {
+        "id": "70b929faa148ad86",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "7832d0febb57b625",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "func": "msg.allCompanies=msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 320,
+        "wires": [
             [
                 "9a45534d9d4bed7f"
             ]

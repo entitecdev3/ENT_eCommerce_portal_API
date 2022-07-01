@@ -5,7 +5,7 @@
                 <headerToolbar>
 				<OverflowToolbar>
 					<!-- <Title text="Products" level="H2" /> -->
-                    <Button text="Update Metadata"/>
+                    <Button text="Update Metadata" press="onUpdateMetaData"/>
 					<ToolbarSpacer />
                     <Button icon="sap-icon://refresh" press="getCompanies"/>
 				</OverflowToolbar>
