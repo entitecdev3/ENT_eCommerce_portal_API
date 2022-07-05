@@ -32,6 +32,22 @@
             "LinkedUDO": null,
             "LinkedSystemObject": null,
             "ValidValuesMD": []
+        },
+        {
+            "Name": "ENT_LastLogin",
+            "Type": "db_Alpha",
+            "Size": 16,
+            "Description": "Last Login Timestamp",
+            "SubType": "st_None",
+            "LinkedTable": null,
+            "DefaultValue": null,
+            "TableName": "AHEM",
+            "FieldID": 5,
+            "EditSize": 16,
+            "Mandatory": "tNO",
+            "LinkedUDO": null,
+            "LinkedSystemObject": null,
+            "ValidValuesMD": []
         }
     ],
     "metadataUDF_on_CustomUDTs": [

@@ -2644,8 +2644,8 @@
         "type": "function",
         "z": "5d59b9ac.ec0a48",
         "name": "session check",
-        "func": "const sessionInfo = global.get('sessionInfo');\nlet { database, userName, password } = msg.req.query;\nconst { flowStartTimestamp } = msg.flowInfo;\n\nif  (msg.autologin) {\n    database = msg.autologin.database;\n    userName = msg.autologin.userName;\n    password = msg.autologin.password;\n}\n\nconst isReqSession = (elem) => {\n    return (\n        elem.database === database &&\n        elem.userName === userName\n    )\n}\nnode.warn(sessionInfo)\nif (sessionInfo) {\n    const reqSession = sessionInfo.filter(isReqSession);\n    node.warn(reqSession)\n    if (reqSession.length > 0) {\n        node.warn(reqSession)\n        const reqSessionInfo = reqSession[0];\n        if (reqSessionInfo.customAttributes.Email !== msg.req.body.username){\n            node.warn(msg)\n            // go add session info\n            return [null, msg];\n        }\n        const reqDatabase = reqSessionInfo.database;\n        const reqUserName = reqSessionInfo.userName;\n        const reqb1SessionId = reqSessionInfo.b1SessionId;\n        const reqEntSessionTimeout = reqSessionInfo.entSessionTimeout;\n        const reqLastAccessTimestamp = reqSessionInfo.lastAccessTimestamp;\n        \n        const timeDifferenceMs = flowStartTimestamp - reqLastAccessTimestamp;\n        const clientTimeoutMs = parseInt(reqEntSessionTimeout) * 60 * 1000;\n        \n        if (clientTimeoutMs - timeDifferenceMs > 0) {\n            msg.serviceLayer.sessionId = reqb1SessionId;\n            const sessionIndex = sessionInfo.findIndex(isReqSession);\n            sessionInfo[sessionIndex].lastAccessTimestamp = flowStartTimestamp;\n            msg.reqSession = sessionInfo[sessionIndex];\n            \n            msg.currentSession = msg.reqSession;\n            return [msg, null];\n        }\n    }\n}\nnode.warn(msg)\n// go add session info\nreturn [null, msg];",
-        "outputs": 2,
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst MetaCompanies = global.get('Companies');\nlet { database, userName, password } = msg.req.body;\nconst { flowStartTimestamp } = msg.flowInfo;\n\nif  (msg.autologin) {\n    database = msg.autologin.database;\n    userName = msg.autologin.userName;\n    password = msg.autologin.password;\n}\n\nconst isReqSession = (elem) => {\n    return (\n        elem.database === database &&\n        elem.userName === userName\n    )\n}\nconst isCompany = (elem) => {\n    return (\n        elem.companyName === database \n    )\n}\nnode.warn(sessionInfo)\nconst metaCheck = MetaCompanies.filter(isCompany);\nnode.warn(metaCheck)\nnode.warn(MetaCompanies)\nnode.warn(msg.req.body)\nif(metaCheck && metaCheck.length>0){\n    // metaCheck[0].Status=\"NotUpdated\";\n    if(metaCheck[0].Status===\"NotUpdated\"){\n        msg.statusCode = 400;\n        msg.payload=\"Schema: \"+database+\" is not Update.\\nPlease contact Administrator\"\n        return [null,null,msg];\n    }\n}\nif (sessionInfo) {\n    const reqSession = sessionInfo.filter(isReqSession);\n    node.warn(reqSession)\n    if (reqSession.length > 0) {\n        node.warn(reqSession)\n        const reqSessionInfo = reqSession[0];\n        if (reqSessionInfo.customAttributes.Email !== msg.req.body.username){\n            node.warn(msg)\n            // go add session info\n            return [null, msg];\n        }\n        const reqDatabase = reqSessionInfo.database;\n        const reqUserName = reqSessionInfo.userName;\n        const reqb1SessionId = reqSessionInfo.b1SessionId;\n        const reqEntSessionTimeout = reqSessionInfo.entSessionTimeout;\n        const reqLastAccessTimestamp = reqSessionInfo.lastAccessTimestamp;\n        \n        const timeDifferenceMs = flowStartTimestamp - reqLastAccessTimestamp;\n        const clientTimeoutMs = parseInt(reqEntSessionTimeout) * 60 * 1000;\n        \n        if (clientTimeoutMs - timeDifferenceMs > 0) {\n            msg.serviceLayer.sessionId = reqb1SessionId;\n            const sessionIndex = sessionInfo.findIndex(isReqSession);\n            sessionInfo[sessionIndex].lastAccessTimestamp = flowStartTimestamp;\n            msg.reqSession = sessionInfo[sessionIndex];\n            \n            msg.currentSession = msg.reqSession;\n            return [msg, null];\n        }\n    }\n}\nnode.warn(msg)\n// go add session info\nreturn [null, msg];",
+        "outputs": 3,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -2658,6 +2658,9 @@
             ],
             [
                 "2197f3cc.d5fdcc"
+            ],
+            [
+                "b0cd2e97ee7cb02b"
             ]
         ]
     },
@@ -2708,8 +2711,8 @@
         "links": [
             "9095ab01.515bd8"
         ],
-        "x": 355,
-        "y": 260,
+        "x": 395,
+        "y": 240,
         "wires": []
     },
     {
@@ -3106,6 +3109,35 @@
         "x": 630,
         "y": 1080,
         "wires": []
+    },
+    {
+        "id": "b0cd2e97ee7cb02b",
+        "type": "link out",
+        "z": "5d59b9ac.ec0a48",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "e73f4709ca1db2d1"
+        ],
+        "x": 345,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "e73f4709ca1db2d1",
+        "type": "link in",
+        "z": "5d59b9ac.ec0a48",
+        "name": "",
+        "links": [
+            "b0cd2e97ee7cb02b"
+        ],
+        "x": 765,
+        "y": 320,
+        "wires": [
+            [
+                "2c221fa675eb7eb0"
+            ]
+        ]
     },
     {
         "id": "a14c1ff.a0d88e",
@@ -12751,7 +12783,7 @@
         "type": "static",
         "z": "5e32f6c26e2f5357",
         "name": "",
-        "folder": "projects\\ENT_Neo_TimeSheet_Prototype_API\\metadatacockpit/webapp",
+        "folder": "projects\\ENT_eCommerce_portal_API\\metadatacockpit/webapp",
         "x": 350,
         "y": 120,
         "wires": [
@@ -12792,121 +12824,24 @@
         "wires": []
     },
     {
-        "id": "7e2abac0db865009",
-        "type": "function",
-        "z": "5e32f6c26e2f5357",
-        "name": "err throw",
-        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
-        "outputs": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 760,
-        "y": 420,
-        "wires": []
-    },
-    {
         "id": "7bd93379078afbd4",
         "type": "function",
         "z": "5e32f6c26e2f5357",
         "name": "",
-        "func": "let companies = msg.payload;\n\nif (msg.flowInfo.config.portal) {\n    //2021.03.27 - [Vlad] - added possibility to filter company list \n    const regexPath = msg.flowInfo.config.portal['ENT_COMP_LIST_REGEX']\n    const companiesFiltered = msg.payload.filter(comp => {\n        //var path = new RegExp(\"^((DEV_GGR)(.(?!_DB$))+)$\",\"gmi\");\n        var path = new RegExp(regexPath);\n        return path.test(comp.dbName)\n    });\n    companies = companiesFiltered;\n}\nelse {\n    companies = [{ \"dbName\": \"NODB\", \"cmpName\": \"NO DATABASE - verificare config_flow.json - proprieta portal.ENT_COMP_LIST_REGEX\", \"versStr\": \"???\", \"dbUser\": \"???\", \"LOC\": \"???\", \"cmpStatus\": \"?\" }];\n}\n\n// const v2res = {\n    // d: {\n        // '__count': companies.length,\n        var results=companies.map(comp => {\n            const { dbName, cmpName } = comp;\n            const v2comp = {\n                cmpName,\n                dbName,\n                CompanyFullName: `${cmpName} (${dbName})`\n            }\n\n            return v2comp;\n        })\n    // }\n// }\n\nmsg.payload = results;\nreturn msg;",
-        "outputs": 1,
+        "func": "// var oCompanies=global.get('Companies');\n// if(oCompanies){\n//     msg.payload=oCompanies;\n//     return [null,msg];\n    \n// }\nmsg.fileToImport = `${global.get('redSettings').userDir}projects\\\\${global.get('redSettings').get('projects').activeProject}\\\\Metadata\\\\metadata_mde.json`;\nreturn msg;",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 740,
-        "y": 300,
+        "x": 460,
+        "y": 340,
         "wires": [
             [
                 "dffc68795bb83f4b"
-            ]
-        ]
-    },
-    {
-        "id": "b235df494fc6d2e3",
-        "type": "debug",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 570,
-        "y": 400,
-        "wires": []
-    },
-    {
-        "id": "94c2efa4cf75fe5d",
-        "type": "HanaClient-request",
-        "z": "5e32f6c26e2f5357",
-        "server": "b298e45c.688258",
-        "sql": "",
-        "x": 530,
-        "y": 320,
-        "wires": [
-            [
-                "68cc1e1775e8b0ac",
-                "7bd93379078afbd4"
             ],
             [
-                "b235df494fc6d2e3",
-                "7e2abac0db865009",
                 "9a45534d9d4bed7f"
-            ]
-        ]
-    },
-    {
-        "id": "d64aa4c928d729f7",
-        "type": "debug",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 530,
-        "y": 280,
-        "wires": []
-    },
-    {
-        "id": "68cc1e1775e8b0ac",
-        "type": "debug",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 670,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "1beff5a0ffd77d02",
-        "type": "function",
-        "z": "5e32f6c26e2f5357",
-        "name": "sql",
-        "func": "msg.configOverride = {};\nif (!msg.flowInfo)\n    msg.flowInfo = {};\nmsg.flowInfo.sql = 'call SBOCOMMON.TMSP_GETCOMPLIST';\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 370,
-        "y": 320,
-        "wires": [
-            [
-                "d64aa4c928d729f7",
-                "94c2efa4cf75fe5d"
             ]
         ]
     },
@@ -12919,7 +12854,7 @@
         "y": 320,
         "wires": [
             [
-                "1beff5a0ffd77d02"
+                "7bd93379078afbd4"
             ]
         ]
     },
@@ -12946,8 +12881,8 @@
         "z": "5e32f6c26e2f5357",
         "configFileName": "config_flow.json",
         "configType": "check-metadata",
-        "x": 890,
-        "y": 240,
+        "x": 650,
+        "y": 300,
         "wires": [
             [
                 "7832d0febb57b625"
@@ -12969,75 +12904,6 @@
         "wires": []
     },
     {
-        "id": "c47ae638e394679c",
-        "type": "function",
-        "z": "5e32f6c26e2f5357",
-        "name": "err throw",
-        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
-        "outputs": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 760,
-        "y": 700,
-        "wires": []
-    },
-    {
-        "id": "4004f990a791d05a",
-        "type": "function",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "func": "let companies = msg.payload;\n\nif (msg.flowInfo.config.portal) {\n    //2021.03.27 - [Vlad] - added possibility to filter company list \n    const regexPath = msg.flowInfo.config.portal['ENT_COMP_LIST_REGEX']\n    const companiesFiltered = msg.payload.filter(comp => {\n        //var path = new RegExp(\"^((DEV_GGR)(.(?!_DB$))+)$\",\"gmi\");\n        var path = new RegExp(regexPath);\n        return path.test(comp.dbName)\n    });\n    companies = companiesFiltered;\n}\nelse {\n    companies = [{ \"dbName\": \"NODB\", \"cmpName\": \"NO DATABASE - verificare config_flow.json - proprieta portal.ENT_COMP_LIST_REGEX\", \"versStr\": \"???\", \"dbUser\": \"???\", \"LOC\": \"???\", \"cmpStatus\": \"?\" }];\n}\n\n// const v2res = {\n    // d: {\n        // '__count': companies.length,\n        var results=companies.map(comp => {\n            const { dbName, cmpName } = comp;\n            const v2comp = {\n                cmpName,\n                dbName,\n                CompanyFullName: `${cmpName} (${dbName})`\n            }\n\n            return v2comp;\n        })\n    // }\n// }\n\nmsg.payload = results;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 740,
-        "y": 580,
-        "wires": [
-            [
-                "febbd0b2319351f0"
-            ]
-        ]
-    },
-    {
-        "id": "ca5b123b2ac30ba3",
-        "type": "debug",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 570,
-        "y": 680,
-        "wires": []
-    },
-    {
-        "id": "43d9e2c62f7e77f3",
-        "type": "HanaClient-request",
-        "z": "5e32f6c26e2f5357",
-        "server": "b298e45c.688258",
-        "sql": "",
-        "x": 530,
-        "y": 600,
-        "wires": [
-            [
-                "910d033970d61cad",
-                "4004f990a791d05a"
-            ],
-            [
-                "ca5b123b2ac30ba3",
-                "c47ae638e394679c",
-                "8ec5e48367602301"
-            ]
-        ]
-    },
-    {
         "id": "b6d635ebda040f12",
         "type": "debug",
         "z": "5e32f6c26e2f5357",
@@ -13053,26 +12919,11 @@
         "wires": []
     },
     {
-        "id": "910d033970d61cad",
-        "type": "debug",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 670,
-        "y": 500,
-        "wires": []
-    },
-    {
         "id": "fa23f17383fe4727",
         "type": "function",
         "z": "5e32f6c26e2f5357",
         "name": "sql",
-        "func": "msg.configOverride = {};\nif (!msg.flowInfo)\n    msg.flowInfo = {};\nmsg.flowInfo.sql = 'call SBOCOMMON.TMSP_GETCOMPLIST';\nnode.warn(msg.req.query.Schema);\nnode.warn(typeof(msg.req.query.Schema));\nnode.warn(JSON.parse(msg.req.query.Schema));\nvar oSchema = JSON.parse(msg.req.query.Schema);\nmsg.schema=oSchema;\nmsg.payload=oSchema;\nreturn msg;",
+        "func": "msg.configOverride = {};\nif (!msg.flowInfo)\n    msg.flowInfo = {};\nmsg.flowInfo.sql = 'call SBOCOMMON.TMSP_GETCOMPLIST';\nnode.warn(msg.req.query.Schema);\nnode.warn(typeof(msg.req.query.Schema));\nnode.warn(JSON.parse(msg.req.query.Schema));\nvar oSchema = JSON.parse(msg.req.query.Schema);\nmsg.schema=oSchema;\nmsg.fileToImport = `${global.get('redSettings').userDir}projects\\\\${global.get('redSettings').get('projects').activeProject}\\\\Metadata\\\\metadata_mde.json`;\n\n// msg.payload=oSchema;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -13083,7 +12934,7 @@
         "wires": [
             [
                 "b6d635ebda040f12",
-                "8ec5e48367602301"
+                "febbd0b2319351f0"
             ]
         ]
     },
@@ -13122,12 +12973,12 @@
         "type": "metadata-engine",
         "z": "5e32f6c26e2f5357",
         "configFileName": "config_flow.json",
-        "configType": "check-metadata",
-        "x": 890,
-        "y": 520,
+        "configType": "import-metadata",
+        "x": 570,
+        "y": 620,
         "wires": [
             [
-                "8ec5e48367602301"
+                "d81e6327f990bc9a"
             ],
             [
                 "8ec5e48367602301"
@@ -13151,33 +13002,17 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": "5",
+        "onceDelay": "1",
         "topic": "",
         "payload": "start flow injected.",
         "payloadType": "str",
-        "x": 140,
-        "y": 700,
+        "x": 100,
+        "y": 360,
         "wires": [
             [
-                "70b929faa148ad86",
                 "369836022ac58c43"
             ]
         ]
-    },
-    {
-        "id": "70b929faa148ad86",
-        "type": "debug",
-        "z": "5e32f6c26e2f5357",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 410,
-        "y": 700,
-        "wires": []
     },
     {
         "id": "7832d0febb57b625",
@@ -13197,5 +13032,40 @@
                 "9a45534d9d4bed7f"
             ]
         ]
+    },
+    {
+        "id": "d81e6327f990bc9a",
+        "type": "function",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "func": "msg.payload=msg.logData;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 600,
+        "wires": [
+            [
+                "8ec5e48367602301",
+                "cedf74d093507537"
+            ]
+        ]
+    },
+    {
+        "id": "cedf74d093507537",
+        "type": "debug",
+        "z": "5e32f6c26e2f5357",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 890,
+        "y": 540,
+        "wires": []
     }
 ]

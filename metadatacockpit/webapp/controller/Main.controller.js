@@ -1,10 +1,11 @@
 sap.ui.define([
-    "./BaseController"
+    "./BaseController",
+    "sap/m/MessageBox"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller) {
+    function (Controller,MessageBox) {
         "use strict";
 
         return Controller.extend("ent.metadata.pockpt.metadatacockpit.controller.Main", {
@@ -38,14 +39,16 @@ sap.ui.define([
                 for (let index = 0; index < oPaths.length; index++) {
                     const element = oPaths[index];
                     var oData=this.getView().getModel("local").getProperty(element);
-                    oSchemas.push(oData.dbName);
+                    oSchemas.push(oData.companyName);
                 }
                 if(oSchemas.length>0){
                     var that=this;
                     var oPayload=JSON.stringify(oSchemas);
 			        this.middleWare.callMiddleWare("/UpdateMetadata?Schema="+oPayload, "GET", {})
 					.then(function (data, status, xhr) {
-						debugger;
+						MessageBox.information(data);
+                        that.getView().byId("idCompanyTable").removeSelections();
+                        that.getCompanies();
 					})
 					.catch(function (jqXhr, textStatus, errorMessage) {
 						that.middleWare.errorHandler(jqXhr,that);
