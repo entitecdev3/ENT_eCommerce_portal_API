@@ -2778,7 +2778,7 @@
         "type": "function",
         "z": "5d59b9ac.ec0a48",
         "name": "send session data payload",
-        "func": "const { currentSession } = msg;\nvar {\n    entSessionTimeout,\n    pwdChangeDays,\n    entSessionId,\n    customAttributes,\n} = currentSession;\nvar userName = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\n// var key = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nvar authType = msg.config_flow_json['authentication'].authType;\nif (authType === \"customSingleSignOn\") {\n    var header = msg.req.headers;\n    for (var k in header) {\n        if (k.toLowerCase() === \"login-email\") {\n            userName = header[k];\n        }\n    }\n}\n// authType = \"OHEM\";\n// const customAttributes = { \"EmpID \": msg.payload[0].empID, \"FirstName\": msg.payload[0].firstName, \"LastName\": msg.payload[0].lastName};\n// const customAttributes = msg.customAttributes;\nmsg.payload = {\n    userName,\n    entSessionTimeout,\n    // U_LastPwdChangeDate,\n    // pwdChangeDays,\n    entSessionId,\n    authType,\n    customAttributes\n};\n\n// msg.sendPayload=msg.payload;\n// msg.payload=null;\nmsg.cookies = {\n    entSessionId\n};\n// document.cookie = \"username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;\";\nmsg.statusCode = 200;\n// msg.flowInfo={};\nreturn msg;",
+        "func": "const { currentSession } = msg;\nvar {\n    entSessionTimeout,\n    pwdChangeDays,\n    entSessionId,\n    customAttributes,\n    database\n} = currentSession;\nvar userName = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\n// var key = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nvar authType = msg.config_flow_json['authentication'].authType;\nif (authType === \"customSingleSignOn\") {\n    var header = msg.req.headers;\n    for (var k in header) {\n        if (k.toLowerCase() === \"login-email\") {\n            userName = header[k];\n        }\n    }\n}\n// authType = \"OHEM\";\n// const customAttributes = { \"EmpID \": msg.payload[0].empID, \"FirstName\": msg.payload[0].firstName, \"LastName\": msg.payload[0].lastName};\n// const customAttributes = msg.customAttributes;\nmsg.payload = {\n    userName,\n    entSessionTimeout,\n    // U_LastPwdChangeDate,\n    // pwdChangeDays,\n    entSessionId,\n    authType,\n    customAttributes,\n    database\n};\n\n// msg.sendPayload=msg.payload;\n// msg.payload=null;\nmsg.cookies = {\n    entSessionId\n};\n// document.cookie = \"username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;\";\nmsg.statusCode = 200;\n// msg.flowInfo={};\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -7995,7 +7995,7 @@
         "type": "function",
         "z": "cd9e3458cc689864",
         "name": "sql",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nvar sql = \"SELECT \" +\n    \"\\\"ItemCode\\\", \\\"ItemName\\\", \\\"Qualita\\\"\" +\n    \",\\\"SalUnitMsr\\\", \\\"InvntryUom\\\"\" +\n    \",\\\"Prz\\\"\" +\n    \",\\\"B_OnHand\\\", \\\"B_Libero\\\", \\\"B_OnOrder\\\"\" +\n    \",\\\"B_OnHand\\\" + \\\"B_Libero\\\" + \\\"B_OnOrder\\\" AS \\\"B_Sum\\\" \" +\n    \",\\\"X_OnHand\\\", \\\"X_Libero\\\", \\\"X_OnOrder\\\"\" +\n    \",\\\"B_OnHand\\\" + \\\"B_Libero\\\" + \\\"B_OnOrder\\\" + \\\"X_OnHand\\\" + \\\"X_Libero\\\" + \\\"X_OnOrder\\\" AS \\\"BX_Sum\\\"\" +\n    \" FROM \\\"VARv_CodificatoreRisultato_V2\\\"\" +\n    \" WHERE \" +\n    \"\\\"U_Livello1\\\" = '\" + msg.flowInfo.request.query[\"Level1Code\"] + \"' AND UPPER(REPLACE(\\\"U_Livello2\\\",' ','')) = UPPER('\" + msg.flowInfo.request.query[\"Level2Code\"] + \"') AND UPPER(REPLACE(\\\"U_Livello3\\\",' ','')) = UPPER('\" + msg.flowInfo.request.query[\"Level3Code\"] + \"')\"\nvar where = \"\";\nvar field = \"\";\nfor (var param in msg.flowInfo.request.query) {\n    if (param !== \"Level1Code\" && param !== \"Level2Code\" && param !== \"Level3Code\" && param !== \"keyUI\" && param !== \"database\" && param !== 'appSection') {\n        var field_values_from_request = msg.flowInfo.request.query[param];\n        if (param !== \"p_fisso_lunghezza_1_unita_di_vendita\" && param !== \"p_fisso_larghezza_1_unita_di_vendita\" && param !== \"p_fisso_spessore\") {\n            field = \"U_\" + msg.flowInfo.paramToCampoOitm[param].CampoOITM\n        }\n        else {\n            switch (param) {\n                case \"p_fisso_lunghezza_1_unita_di_vendita\":\n                    field = \"SLength1\"\n                    break\n                case \"p_fisso_larghezza_1_unita_di_vendita\":\n                    field = \"SWidth1\"\n                    break\n                case \"p_fisso_spessore\":\n                    field = \"SHeight1\"\n                    break\n            }\n        }\n        if (field_values_from_request.includes(\"|\")) {\n            //with multiple values in request : e.g. par=value1|value2\n            var par_values_list_where_string = field_values_from_request.replace(/\\'/g, \"\").replace(/\\|/g, \"','\");\n            where += (\" AND REPLACE(\\\"\" + field + \"\\\",' ','') IN ('\" + par_values_list_where_string + \"') \");\n\n        } else {\n            if (field === 'SLength1' || field === 'SWidth1' || field === 'SHeight1'){\n                if (msg.flowInfo.request.query[param].includes(\"-\")){\n                    where += (\" AND \\\"\" + field + \"\\\" BETWEEN  \" + msg.flowInfo.request.query[param].split(\"-\")[0] + \" AND \" + msg.flowInfo.request.query[param].split(\"-\")[1] + \" \");\n                }\n                else{\n                    where += (\" AND \\\"\" + field + \"\\\" = \" + msg.flowInfo.request.query[param] + \" \");\n               }\n            }\n            else\n                where += (\" AND REPLACE(\\\"\" + field + \"\\\",' ','') = '\" + msg.flowInfo.request.query[param] + \"' \");\n\n            //with single value in request : e.g. par=value1\n            //where += (\" AND REPLACE(\\\"\" + field + \"\\\",' ','') = '\" + msg.flowInfo.request.query[param] + \"' \");\n            //where += (\" AND REPLACE(TO_VARCHAR(\\\"\" + field + \"\\\"),' ','') = '\" + msg.flowInfo.request.query[param] + \"' \");\n        }\n\n    }\n}\nsql += where\n/*\nconst { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nmsg.topic = \"SQL\";\nmsg.payload = [\n    `SET SCHEMA ${database}`,\n    sql\n];*/\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\n\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nvar oJoin=``;\nif (msg.flowInfo.request.query[\"CardCode\"]){\n    oJoin = `SELECT T1.*,T0.\"ItemCode\", T0.\"ItemName\", T0.\"Qualita\",\nT0.\"SalUnitMsr\", T0.\"InvntryUom\",T0.\"Prz\",T0.\"B_OnHand\",\nT0.\"B_Libero\", T0.\"B_OnOrder\",T0.\"B_OnHand\" +\nT0.\"B_Libero\" + T0.\"B_OnOrder\" AS \"B_Sum\" ,T0.\"X_OnHand\", T0.\"X_Libero\", T0.\"X_OnOrder\",T0.\"B_OnHand\"\n+ T0.\"B_Libero\" + T0.\"B_OnOrder\" + T0.\"X_OnHand\" + T0.\"X_Libero\" + T0.\"X_OnOrder\" AS \"BX_Sum\"\nFROM \"VARv_CodificatoreRisultato_V2\" T0 left Join \"ENT_ItemBP_Prices\" T1 \non T1.\"ItemCode\"=T0.\"ItemCode\"\n AND T1.\"CardCode\"='${msg.flowInfo.request.query[\"CardCode\"]}' WHERE `;\n}\nelse{\n    oJoin =`SELECT \"ItemCode\", \"ItemName\", \"Qualita\",\n\"SalUnitMsr\", \"InvntryUom\",\"Prz\",\"B_OnHand\",\n\"B_Libero\", \"B_OnOrder\",\"B_OnHand\" +\n\"B_Libero\" + \"B_OnOrder\" AS \"B_Sum\" ,\"X_OnHand\", \"X_Libero\", \"X_OnOrder\",\"B_OnHand\"\n+ \"B_Libero\" + \"B_OnOrder\" + \"X_OnHand\" + \"X_Libero\" + \"X_OnOrder\" AS \"BX_Sum\"\nFROM \"VARv_CodificatoreRisultato_V2\" WHERE \n`;\n}\n// var sql = \"SELECT \" +\n//     \"\\\"ItemCode\\\", \\\"ItemName\\\", \\\"Qualita\\\"\" +\n//     \",\\\"SalUnitMsr\\\", \\\"InvntryUom\\\"\" +\n//     \",\\\"Prz\\\"\" +\n//     \",\\\"B_OnHand\\\", \\\"B_Libero\\\", \\\"B_OnOrder\\\"\" +\n//     \",\\\"B_OnHand\\\" + \\\"B_Libero\\\" + \\\"B_OnOrder\\\" AS \\\"B_Sum\\\" \" +\n//     \",\\\"X_OnHand\\\", \\\"X_Libero\\\", \\\"X_OnOrder\\\"\" +\n//     \",\\\"B_OnHand\\\" + \\\"B_Libero\\\" + \\\"B_OnOrder\\\" + \\\"X_OnHand\\\" + \\\"X_Libero\\\" + \\\"X_OnOrder\\\" AS \\\"BX_Sum\\\"\" +\n//     \" FROM \\\"VARv_CodificatoreRisultato_V2\\\" T0\" +\nvar sql = oJoin +\n    \"\\\"U_Livello1\\\" = '\" + msg.flowInfo.request.query[\"Level1Code\"] + \"' AND UPPER(REPLACE(\\\"U_Livello2\\\",' ','')) = UPPER('\" + msg.flowInfo.request.query[\"Level2Code\"] + \"') AND UPPER(REPLACE(\\\"U_Livello3\\\",' ','')) = UPPER('\" + msg.flowInfo.request.query[\"Level3Code\"] + \"')\"\nvar where = \"\";\nvar field = \"\";\nfor (var param in msg.flowInfo.request.query) {\n    if (param !== \"Level1Code\" && param !== \"Level2Code\" && param !== \"Level3Code\" && param !== \"keyUI\" && param !== \"database\" && param !== 'appSection' && param !== \"CardCode\") {\n        var field_values_from_request = msg.flowInfo.request.query[param];\n        if (param !== \"p_fisso_lunghezza_1_unita_di_vendita\" && param !== \"p_fisso_larghezza_1_unita_di_vendita\" && param !== \"p_fisso_spessore\") {\n            field = \"U_\" + msg.flowInfo.paramToCampoOitm[param].CampoOITM\n        }\n        else {\n            switch (param) {\n                case \"p_fisso_lunghezza_1_unita_di_vendita\":\n                    field = \"SLength1\"\n                    break\n                case \"p_fisso_larghezza_1_unita_di_vendita\":\n                    field = \"SWidth1\"\n                    break\n                case \"p_fisso_spessore\":\n                    field = \"SHeight1\"\n                    break\n            }\n        }\n        if (field_values_from_request.includes(\"|\")) {\n            //with multiple values in request : e.g. par=value1|value2\n            var par_values_list_where_string = field_values_from_request.replace(/\\'/g, \"\").replace(/\\|/g, \"','\");\n            where += (\" AND REPLACE(\\\"\" + field + \"\\\",' ','') IN ('\" + par_values_list_where_string + \"') \");\n\n        } else {\n            if (field === 'SLength1' || field === 'SWidth1' || field === 'SHeight1'){\n                if (msg.flowInfo.request.query[param].includes(\"-\")){\n                    where += (\" AND \\\"\" + field + \"\\\" BETWEEN  \" + msg.flowInfo.request.query[param].split(\"-\")[0] + \" AND \" + msg.flowInfo.request.query[param].split(\"-\")[1] + \" \");\n                }\n                else{\n                    where += (\" AND \\\"\" + field + \"\\\" = \" + msg.flowInfo.request.query[param] + \" \");\n               }\n            }\n            else\n                where += (\" AND REPLACE(\\\"\" + field + \"\\\",' ','') = '\" + msg.flowInfo.request.query[param] + \"' \");\n\n            //with single value in request : e.g. par=value1\n            //where += (\" AND REPLACE(\\\"\" + field + \"\\\",' ','') = '\" + msg.flowInfo.request.query[param] + \"' \");\n            //where += (\" AND REPLACE(TO_VARCHAR(\\\"\" + field + \"\\\"),' ','') = '\" + msg.flowInfo.request.query[param] + \"' \");\n        }\n\n    }\n}\nsql += where\n/*\nconst { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nmsg.topic = \"SQL\";\nmsg.payload = [\n    `SET SCHEMA ${database}`,\n    sql\n];*/\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\n\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -8092,7 +8092,7 @@
         "type": "function",
         "z": "cd9e3458cc689864",
         "name": "",
-        "func": "var json = msg.payload\n\nvar tableData = []\nvar data = {}\nvar idrow = 0\njson.forEach((record) => {\n\n    data = {\n        \"id_row\": ++idrow,\n        \"ItemCode\": record.ItemCode,\n        \"ItemName\": record.ItemName,\n        \"Qualita\": record.Qualita,\n        \"SalUnitMsr\": record.SalUnitMsr,\n        \"InvntryUom\": record.InvntryUom,\n        \"Prz\": record.Prz,\n        \"B_OnHand\": record.B_OnHand,\n        \"B_Libero\": record.B_Libero,\n        \"B_OnOrder\": record.B_OnOrder,\n        \"B_Sum\": record.B_Sum,\n        \"X_OnHand\": record.X_OnHand,\n        \"X_Libero\": record.X_Libero,\n        \"X_OnOrder\": record.X_OnOrder,\n        \"BX_Sum\": record.BX_Sum\n    }\n    tableData.push(data)\n})\nmsg.payload = tableData\nreturn msg;",
+        "func": "var json = msg.payload\n\nvar tableData = []\nvar data = {}\nvar idrow = 0\njson.forEach((record) => {\n\n    data = {\n        \"id_row\": ++idrow,\n        \"ItemCode\": record.ItemCode,\n        \"ItemName\": record.ItemName,\n        \"Qualita\": record.Qualita,\n        \"SalUnitMsr\": record.SalUnitMsr,\n        \"InvntryUom\": record.InvntryUom,\n        \"Prz\": record.Prz,\n        \"B_OnHand\": record.B_OnHand,\n        \"B_Libero\": record.B_Libero,\n        \"B_OnOrder\": record.B_OnOrder,\n        \"B_Sum\": record.B_Sum,\n        \"X_OnHand\": record.X_OnHand,\n        \"X_Libero\": record.X_Libero,\n        \"X_OnOrder\": record.X_OnOrder,\n        \"BX_Sum\": record.BX_Sum,\n        \"SpecialPrice\": record.SpecialPrice\n    }\n    tableData.push(data)\n})\nmsg.payload = tableData\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -9266,6 +9266,183 @@
         "wires": [
             [
                 "d60b7e40603a2b8a"
+            ]
+        ]
+    },
+    {
+        "id": "730223903daf80f5",
+        "type": "http response",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "2036358c91e4c22c",
+        "type": "HanaClient-request",
+        "z": "f8f36fd1bdd8ebf4",
+        "server": "b298e45c.688258",
+        "sql": "",
+        "x": 587,
+        "y": 709,
+        "wires": [
+            [
+                "4dd69b9327fed116",
+                "3653fd11cbf924eb"
+            ],
+            [
+                "fec59f3e7a7cd3bb",
+                "0d9c4bbac27a7613",
+                "730223903daf80f5"
+            ]
+        ]
+    },
+    {
+        "id": "2d166e1d251ce7b6",
+        "type": "subflow:322da763fc08e6b1",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "env": [],
+        "x": 160,
+        "y": 680,
+        "wires": [
+            [
+                "8a29b567fea5b947"
+            ],
+            [
+                "730223903daf80f5"
+            ]
+        ]
+    },
+    {
+        "id": "8a29b567fea5b947",
+        "type": "function",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "sql",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\n// reqSession[0].customAttributes.EmpID\n//const { config: { 'hana-db-connection': { database } } } = msg.flowInfo;\nconst  userName  = reqSession[0].configOverride.userName;\nnode.warn(reqSession[0]);\n\nvar sql = `select top 100 * from \"ENT_ItemBP_Prices\"`;\nif(msg.req.query.CardCode){\n    sql += ` where \"CardCode\"='${msg.req.query.CardCode}'`\n}\n\nmsg.flowInfo.sql = sql\n// return msg;\n// return msg;\nmsg.payload=msg.flowInfo.sql;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 680,
+        "wires": [
+            [
+                "f96279b6f0a798dc",
+                "6e0f9f6aa84d5560"
+            ]
+        ]
+    },
+    {
+        "id": "4dd69b9327fed116",
+        "type": "debug",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 570,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "fec59f3e7a7cd3bb",
+        "type": "debug",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "0d9c4bbac27a7613",
+        "type": "function",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "err throw",
+        "func": "msg.toLogExtra = msg.b1SLerr ? msg.b1SLerr :msg.payload;\n\nmsg.statusCode = 400;\nnode.warn(msg)\nthrow new Error(msg);",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "f4bdbcecc0ccd58c",
+        "type": "http in",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "Client List Price List",
+        "url": "/api/ClientListPricelist",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 620,
+        "wires": [
+            [
+                "2d166e1d251ce7b6"
+            ]
+        ]
+    },
+    {
+        "id": "f96279b6f0a798dc",
+        "type": "debug",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 410,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "3653fd11cbf924eb",
+        "type": "function",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 660,
+        "wires": [
+            [
+                "730223903daf80f5"
+            ]
+        ]
+    },
+    {
+        "id": "6e0f9f6aa84d5560",
+        "type": "subflow:1e460b6845924ff6",
+        "z": "f8f36fd1bdd8ebf4",
+        "name": "",
+        "x": 490,
+        "y": 600,
+        "wires": [
+            [
+                "2036358c91e4c22c"
             ]
         ]
     },
