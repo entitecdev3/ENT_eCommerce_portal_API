@@ -11977,7 +11977,7 @@
         "type": "function",
         "z": "df177455398999d0",
         "name": "",
-        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif(msg.payload && msg.payload.length===0){\n    var payload={\n        \"Code\": reqSession[0].customAttributes.EmpID,\n        \"Name\":\"\",\n        \"U_CartContent\":\"\"\n    }; \n    if (!msg.serviceLayer.headers)\n        msg.serviceLayer.headers = {};\n    msg.serviceLayer.headers[\"content-type\"] = msg.req.headers[\"content-type\"];\n    msg.serviceLayer.method = 'U_ENT_PORT_SHOPCART';\n    msg.serviceLayer.body=payload;\n    \n    return [null,msg];\n}\nmsg.payload=msg.payload[0];\nreturn [msg,null];",
+        "func": "const sessionInfo = global.get('sessionInfo');\nconst { entSessionId } = msg.req.cookies;\nconst isReqSession = (elem) => {\n    return (\n        elem.entSessionId === entSessionId\n    )\n};\nconst reqSession = sessionInfo.filter(isReqSession);\nif(msg.payload && msg.payload.length===0){\n    var payload={\n        \"Code\": reqSession[0].customAttributes.EmpID,\n        \"Name\": reqSession[0].customAttributes.U_Name,\n        \"U_CartContent\":\"\"\n    }; \n    if (!msg.serviceLayer.headers)\n        msg.serviceLayer.headers = {};\n    msg.serviceLayer.headers[\"content-type\"] = msg.req.headers[\"content-type\"];\n    msg.serviceLayer.method = 'U_ENT_PORT_SHOPCART';\n    msg.serviceLayer.body=payload;\n    \n    return [null,msg];\n}\nmsg.payload=msg.payload[0];\nreturn [msg,null];",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
