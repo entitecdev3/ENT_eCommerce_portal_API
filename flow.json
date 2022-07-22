@@ -3066,7 +3066,7 @@
         "type": "function",
         "z": "5d59b9ac.ec0a48",
         "name": "lastlogin Update",
-        "func": "var key = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nmsg.configOverrideHana = {};\nmsg.configOverrideHana.database = msg.req.body.database;\nmsg.configOverride.database = msg.req.body.database;\n// var d=new Date();\nvar d = msg.req.body.loginDate;\n\n// var loginDate = d.toISOString().split(\"T\")[0] + \" \" + d.toISOString().split(\"T\")[1].split(\".\")[0];\nvar loginDate = d.split(\"T\")[0] + \" \" + d.split(\"T\")[1].split(\".\")[0];\nmsg.flowInfo.sql = `UPDATE OHEM\nSET \"U_ENT_LastLogin\" = '${loginDate.slice(0, 16)}'\nWHERE \"empID\"='${msg.customAttributes.EmpID}'`;\nreturn msg;",
+        "func": "var key = msg.req.body.username ? msg.req.body.username : msg.req.body.loginEmail;\nmsg.configOverrideHana = {};\nmsg.configOverrideHana.database = msg.req.body.database;\nmsg.configOverride.database = msg.req.body.database;\n// var d=new Date();\nvar d = msg.req.body.loginDate;\n\n// var loginDate = d.toISOString().split(\"T\")[0] + \" \" + d.toISOString().split(\"T\")[1].split(\".\")[0];\nvar loginDate = d.split(\"T\")[0] + \" \" + d.split(\"T\")[1].split(\".\")[0];\nmsg.flowInfo.sql = `UPDATE OHEM\nSET \"U_ENT_LastLogin\" =  TO_VARCHAR(current_timestamp,'YYYY-MM-DD HH:MM')\nWHERE \"empID\"='${msg.customAttributes.EmpID}'`;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
